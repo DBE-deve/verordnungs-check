@@ -14,6 +14,13 @@
 4. **Vier Prüf-Agenten:** Jeder Agent bekommt die Verordnung und die berechneten Fakten, durchsucht seinen Ausschnitt der Wissensbasis und liefert Befunde im gemeinsamen JSON-Schema.
 5. **Ergebnis zusammenführen (Code-Node):** Ampel (rot / gelb / grün), Absetzungsrisiko, Antworttext.
 6. **Protokoll:** Prüfung und Befunde werden in Supabase gespeichert.
+
+**Ab Sprint 2 (R1, Verordnungsfall):** Zwischen Schritt 3 und 4 kommen zwei Komponenten dazu:
+
+- **Historie abfragen** (Supabase-Node): liest frühere Verordnungen mit demselben Patienten-Pseudonym, derselben ICD-Stelle (3-stellig), Diagnosegruppe und LANR.
+- **Verordnungsfall berechnen** (Code-Node): summiert die Einheiten und prüft die 6-Monats-Regel (§ 7 HeilM-RL).
+
+Das Ergebnis geht als berechneter Fakt an den Mengen-Prüfer. Jede geprüfte Verordnung wird in die Historie geschrieben. Details: [`dateneingang.md`](dateneingang.md).
 7. **Antwort:** Die Rezeption erhält Ampel, Korrekturhinweise und Fundstellen.
 
 ## Befund-Schema
@@ -35,8 +42,21 @@
 | `pruefungen` | Ein Prüflauf pro Verordnung: Eingabe, Ampel, Risiko, Dauer, Freigabe |
 | `befunde` | Ein Befund pro Prüfpunkt und Agent |
 | `testfaelle` | Synthetische Verordnungen mit erwarteten Befunden für die Evaluation |
+| `verordnungen` *(Sprint 2)* | Historie: eine Zeile je geprüfter Verordnung mit Pseudonym, ICD 3-stellig, Diagnosegruppe, LANR, Datum, Einheiten |
 
 Row Level Security ist auf allen Tabellen aktiv, es gibt keine öffentlichen Policies. Nur n8n greift mit dem service_role-Schlüssel zu.
+
+## Deployment
+
+| Punkt | Umsetzung |
+|---|---|
+| Laufzeitumgebung | n8n Cloud (vorhandene Instanz des Teams) |
+| Datenbank | Supabase, Region eu-central-1 (Frankfurt) |
+| Zugang für die Rezeption | n8n-Chat. Veröffentlicht wird er erst mit aktiver Anmeldung (Basic Auth oder n8n-Login), sonst kann jeder mit dem Link Kosten erzeugen |
+| Nachweis einer erfolgreichen Ausführung | Ausführungsprotokoll in n8n und Zeilen in `pruefungen` und `befunde`. Für die Präsentation: Screenshots je Ampelfarbe |
+| Veröffentlichung | Workflow-Export (ohne Credential-IDs und Webhook-ID), Migrationen, Testdaten und Tests auf GitHub |
+
+Komponenten im Detail und Begründung des Wegs: [`implementierung.md`](implementierung.md).
 
 ## Bewusste Design-Entscheidungen (Trade-offs)
 

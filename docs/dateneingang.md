@@ -15,7 +15,7 @@ Der Verordnungs-Check hat drei Datenquellen.
 | Stufe | Eingang | Status |
 |---|---|---|
 | Prototyp | Rezeption tippt die Angaben in den Chat oder fügt sie als Text bzw. JSON ein. Der Agent „Verordnung erfassen“ überführt sie in das feste Schema. | umgesetzt |
-| Demo | **Foto der Verordnung** (Muster 13) im Chat hochladen. Das Sprachmodell liest das Bild aus, danach läuft der bestehende Ablauf. Nur mit selbst ausgefüllten Muster-Formularen und erfundenen Daten. | geplant (Sprint 2) |
+| Demo | **Foto der Verordnung** (Muster 13) im Chat hochladen. Das Sprachmodell liest das Bild aus, danach läuft der bestehende Ablauf. Nur mit selbst ausgefüllten Muster-Formularen und erfundenen Daten. | nur bei Puffer (Entscheidung 13.10.2026: R1 hat Vorrang) |
 | Echtbetrieb | Übergabe direkt aus der Praxissoftware (Export oder Schnittstelle), abhängig von der eingesetzten Software | Ausblick |
 
 ## 3. Historie für den Verordnungsfall: geplant (Sprint 2)

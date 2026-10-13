@@ -62,7 +62,7 @@ Details: [docs/architektur.md](docs/architektur.md)
 | `supabase/migrations/` | Datenbankschema |
 | `supabase/seed/` | Synthetische Testverordnungen (7 Testfälle + 3 Kontrollfälle) |
 | `tests/` | Automatische Tests für den Code-Anteil (`node tests/fakten.test.mjs`) |
-| `docs/` | Architektur, Evaluation, Governance, Business Case |
+| `docs/` | Design-Briefing (Scope, Erfolgskriterien, Implementierungsweg, Architektur, Build-Plan), Dateneingang, Evaluation, Governance |
 
 ## Team
 
@@ -81,6 +81,8 @@ Prototyp läuft (Stand 13.10.2026):
 - Vier Prüfer, Ampel und Protokoll funktionieren durchgängig, rund 24 Sekunden und 3–4 Cent je Prüfung
 - Evaluation: 10 von 10 Ampeln korrekt, 0 kritische Fehlalarme (Baseline: 12), Details in [`docs/evaluation.md`](docs/evaluation.md)
 
-Geplant für Sprint 2: Foto-Upload der Verordnung und Prüfung des Verordnungsfalls (orientierende Behandlungsmenge), siehe [`docs/dateneingang.md`](docs/dateneingang.md).
+Design-Briefing (Sprint 1): [Scope](docs/scope.md) · [Erfolgskriterien](docs/erfolgskriterien.md) · [Implementierungsweg](docs/implementierung.md) · [Architektur](docs/architektur.md) · [Build-Plan](docs/build-plan.md)
+
+Geplant für Sprint 2: Prüfung des Verordnungsfalls (R1, orientierende Behandlungsmenge), siehe [`docs/dateneingang.md`](docs/dateneingang.md). Foto-Upload nur bei Puffer.
 
 Offen: Ist-Interview mit der Praxis, Business Case, EU-AI-Act-Einordnung, Präsentation.
