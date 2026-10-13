@@ -24,6 +24,7 @@ Der Verordnungs-Check hat drei Datenquellen.
 
 - Die **orientierende Behandlungsmenge** (WS/EX: bis zu 18 Einheiten) darf überschritten werden. Der Arzt dokumentiert dann die Gründe in seiner Patientenakte.
 - **Harte Grenze (§ 12 Abs. 6):** Massagetherapie und standardisierte Heilmittelkombination höchstens 12 Einheiten je Verordnungsfall.
+  - *Zu prüfen:* Ein AOK-Merkblatt (Stand 2023) führt die 12 Einheiten bei Massage als **orientierende** Behandlungsmenge, nicht als harte Grenze. Bis zur Klärung am Richtlinientext bleibt die Ampel gelb (siehe unten).
 
 **Umsetzung:**
 
@@ -47,8 +48,37 @@ Der Verordnungs-Check hat drei Datenquellen.
 - Der Verordnungsfall hängt am Arzt. Therapie in einer anderen Praxis ist für das System unsichtbar. Deshalb ergibt die Fallprüfung immer nur einen Hinweis, nie ein Rot wegen der 18er-Menge.
 - Datenschutz: Die Historie speichert Behandlungsverläufe pro Patient (Gesundheitsdaten, Art. 9 DSGVO). Pseudonymisierung, Löschfristen und Zugriffsschutz werden in [`governance.md`](governance.md) ergänzt.
 
+## 4. Rückmeldung der Praxis (13.10.2026)
+
+| Frage | Antwort der Praxis |
+|---|---|
+| Alltagsproblem | Nicht die Menge **einer** Verordnung ist das Problem, sondern **Folgeverordnungen**. Ärzte wissen oft selbst nicht, wie viel sie auf denselben Schlüssel schon verordnet haben. Prüft die Praxis das nicht, zahlt die Kasse nach ihrer Erfahrung nichts. |
+| Massage über 12 Einheiten | Nicht gesondert beantwortet; das Problem betrifft Folgeverordnungen allgemein. |
+| Patientennummer als Pseudonym | Ja, die Praxissoftware vergibt Patientennummern. |
+| Zusätzlich genannt | Parallele Verordnungen (z. B. Lymphdrainage obere und untere Extremität): Die **Behandlungszeit** beider Verordnungen zusammen kann den übernommenen Zeitbedarf überschreiten. Selten, aber teuer. |
+| Zusätzlich genannt | Bei zwei parallelen Verordnungen darf nicht dieselbe Behandlung doppelt abgerechnet werden. Es muss nach Diagnosegruppe **und** Art der Behandlung unterschieden werden. |
+
+### Abgeleitete Prüfregeln
+
+| # | Regel | Umfang |
+|---|---|---|
+| R1 | **Verordnungsfall-Summe:** Einheiten aller Verordnungen im selben Fall (Patient + ICD 3-stellig + Diagnosegruppe + Arzt) summieren und gegen die orientierende Behandlungsmenge stellen | Sprint 2, im Code, 2 neue Testfälle |
+| R2 | **Parallele MLD-Verordnungen:** Gesamte Behandlungszeit je Sitzung gegen den zulässigen Zeitbedarf (Stadium + Anzahl Körperteile) prüfen | Ausbaustufe nach MSIT. *Annahme:* Die genaue Grenze bei parallelen Verordnungen ist noch nicht am Richtlinientext belegt. |
+| R3 | **Doppelabrechnung:** Parallele Verordnungen müssen sich in Diagnosegruppe und Heilmittel unterscheiden | Ausbaustufe nach MSIT. *Annahme:* Regelquelle (HeilM-RL bzw. Rahmenvertrag) noch zu belegen. |
+
+Alle drei Regeln nutzen dieselbe Historie aus Abschnitt 3. Die Architektur (n8n, vier Prüfer, Supabase) bleibt unverändert, es kommen nur die Historie-Tabelle und ein Lookup-Knoten dazu.
+
+### Widerspruch, der vor der Präsentation geklärt sein muss
+
+Laut § 32 Abs. 1b SGB V brauchen Verordnungen über die orientierende Behandlungsmenge hinaus **keine Genehmigung** der Kasse; der Arzt dokumentiert die Gründe. Die Erfahrung der Praxis („Kasse zahlt keinen Cent“) passt dazu nicht. Mögliche Erklärungen:
+
+- Die Kürzung betraf die **Höchstmenge je Verordnung** (z. B. mehr als 6 Einheiten WS/EX), nicht die orientierende Menge.
+- Kassen setzen in der Praxis trotzdem ab. Das wäre dann ein Fall für den Widerspruch, nicht für eine rote Ampel.
+
+Bis zur Klärung bleibt die Bewertung aus Abschnitt 3: Überschreiten der orientierenden Menge = **gelb**.
+
 ## Offene Fragen an die Praxis
 
-1. Was ist das Alltagsproblem genau: Ärzte verweigern Folgeverordnungen, die Praxis verliert den Überblick über die Einheiten, oder die Kasse hat schon gekürzt?
-2. Gab es Kürzungen wegen Massage über 12 Einheiten je Verordnungsfall?
-3. Gibt es in der Praxissoftware eine Patientennummer, die als Pseudonym dienen kann?
+1. Gibt es ein geschwärztes Absetzungsschreiben der Kasse, aus dem die Begründung hervorgeht?
+2. Wie oft kommt es zu solchen Absetzungen, und um welchen Betrag geht es grob pro Jahr? (Grundlage für den Business Case)
+3. Lymphdrainage: Welche Kombination aus Stadium, Körperteilen und Zeit wurde konkret abgesetzt?
