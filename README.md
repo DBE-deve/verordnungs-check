@@ -81,4 +81,6 @@ Prototyp läuft (Stand 13.10.2026):
 - Vier Prüfer, Ampel und Protokoll funktionieren durchgängig, rund 24 Sekunden und 3–4 Cent je Prüfung
 - Evaluation: 10 von 10 Ampeln korrekt, 0 kritische Fehlalarme (Baseline: 12), Details in [`docs/evaluation.md`](docs/evaluation.md)
 
+Geplant für Sprint 2: Foto-Upload der Verordnung und Prüfung des Verordnungsfalls (orientierende Behandlungsmenge), siehe [`docs/dateneingang.md`](docs/dateneingang.md).
+
 Offen: Ist-Interview mit der Praxis, Business Case, EU-AI-Act-Einordnung, Präsentation.
