@@ -1,0 +1,235 @@
+{
+  "name": "Verordnungs-Check – Wissensbasis laden",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "c0a8dea8-da9f-45a7-a0ef-7554948643f0",
+      "name": "Wissensbasis neu laden",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  { json: { quelle: 'HeilM-RL', titel: 'Heilmittel-Richtlinie (G-BA), Fassung in Kraft seit 05.08.2025', url: 'https://www.g-ba.de/downloads/62-492-3865/HeilM-RL_2025-05-15_iK-2025-08-05.pdf' } },\n  { json: { quelle: 'Heilmittelkatalog', titel: 'Heilmittelkatalog (G-BA), Zweiter Teil der HeilM-RL, Stand 16.05.2024', url: 'https://www.g-ba.de/downloads/17-98-3064/HeilM-RL_2024-05-16_Heilmittelkatalog.pdf' } },\n  { json: { quelle: 'KBV-Diagnoseliste', titel: 'Heilmittel-Diagnoseliste der KBV (langfristiger Heilmittelbedarf, besonderer Verordnungsbedarf), Stand 01.01.2026', url: 'https://www.kbv.de/documents/praxis/verordnungen/heilmittel/heilmittel-diagnoseliste.pdf' } }\n];"
+      },
+      "id": "5e7af16c-0d86-4751-9e37-fa2d115eba32",
+      "name": "Regelwerke definieren",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          },
+          "timeout": 60000
+        }
+      },
+      "id": "7e5fad33-69f1-4463-b91f-965662ebc8eb",
+      "name": "PDF herunterladen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        480,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "mode": "id",
+          "value": "documents"
+        },
+        "embeddingBatchSize": 100,
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "id": "6178c9c0-2c3d-4404-8208-83f954120a94",
+      "name": "In Supabase speichern",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        720,
+        304
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "name": "Supabase Verordnungs_check"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "1a8816d6-5501-41c3-b327-a9953b578430",
+      "name": "OpenAI Embeddings",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        640,
+        464
+      ],
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "binaryMode": "specificField",
+        "loader": "pdfLoader",
+        "textSplittingMode": "custom",
+        "options": {
+          "splitPages": true,
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "quelle",
+                "value": "={{ $('Regelwerke definieren').item.json.quelle }}"
+              },
+              {
+                "name": "titel",
+                "value": "={{ $('Regelwerke definieren').item.json.titel }}"
+              },
+              {
+                "name": "url",
+                "value": "={{ $('Regelwerke definieren').item.json.url }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "ce211d34-3be9-4d2e-96ea-79048910ec6d",
+      "name": "PDF lesen",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        800,
+        464
+      ]
+    },
+    {
+      "parameters": {
+        "chunkSize": 1200,
+        "chunkOverlap": 150,
+        "options": {}
+      },
+      "id": "052159b7-1bfe-4b98-9d85-3d32ced45570",
+      "name": "In Abschnitte teilen",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        800,
+        624
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Wissensbasis für den Verordnungs-Check\nLädt die drei frei zugänglichen Regelwerke (HeilM-RL, Heilmittelkatalog, KBV-Diagnoseliste), teilt sie in Abschnitte, erzeugt Embeddings und speichert sie in der Supabase-Tabelle documents.\n\nVor dem erneuten Laden die Tabelle leeren, sonst entstehen Dubletten.\n\nDer ICD-10-GM wird bewusst nicht vollständig geladen (BfArM-Nutzungsbedingungen).",
+        "height": 432,
+        "width": 256,
+        "color": 5
+      },
+      "id": "d16f8a46-1ec9-498e-a69a-6f549a65c908",
+      "name": "Sticky Note b6dcfd44",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        128
+      ]
+    }
+  ],
+  "connections": {
+    "Wissensbasis neu laden": {
+      "main": [
+        [
+          {
+            "node": "Regelwerke definieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Regelwerke definieren": {
+      "main": [
+        [
+          {
+            "node": "PDF herunterladen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDF herunterladen": {
+      "main": [
+        [
+          {
+            "node": "In Supabase speichern",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Embeddings": {
+      "ai_embedding": [
+        [
+          {
+            "node": "In Supabase speichern",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDF lesen": {
+      "ai_document": [
+        [
+          {
+            "node": "In Supabase speichern",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "In Abschnitte teilen": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "PDF lesen",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}

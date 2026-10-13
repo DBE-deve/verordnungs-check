@@ -20,6 +20,8 @@
 - Row Level Security auf allen Tabellen, keine öffentlichen Policies
 - Zugriff nur über den service_role-Schlüssel in n8n; Schlüssel nie im Repository
 - Chat-Oberfläche: Hinweis, keine echten Patientendaten einzugeben
+- Der Chat ist im Prototyp als öffentlicher n8n-Chat angelegt, aber nicht veröffentlicht. Vor dem Veröffentlichen eine Anmeldung aktivieren (Basic Auth oder n8n-Login), sonst kann jeder mit dem Link Kosten erzeugen
+- Workflow-Exporte im Repository ohne Credential-IDs und ohne Webhook-ID
 
 ## Lizenzen der Wissensquellen
 

@@ -21,4 +21,14 @@ insert into public.testfaelle (name, verordnung, erwartete_befunde, beschreibung
  '{"gesamtstatus":"rot","fehler":[{"agent":"frist","feld":"Unterbrechung"}]}', '22 Tage Pause ohne dokumentierten Grund, Grenze 14 Tage'),
 ('TF07 Dringlich, aber zu spät',
  '{"verordnung_ref":"VO-0007","ausstellungsdatum":"2026-09-24","pruefdatum":"2026-10-12","geplanter_beginn":"2026-10-12","dringlich":true,"icd10":"S83.5","diagnosegruppe":"EX","leitsymptomatik":"a","heilmittel":[{"name":"KG","einheiten":6,"art":"vorrangig"}],"frequenz":"2x/Woche","lanr":"123456701","bsnr":"987654300","unterschrift":true,"letzte_behandlung":null,"kostentraeger":"GKV"}',
- '{"gesamtstatus":"rot","fehler":[{"agent":"frist","feld":"Behandlungsbeginn"}]}', 'Dringlicher Behandlungsbedarf: Grenze 14 Tage, hier 18 Tage');
+ '{"gesamtstatus":"rot","fehler":[{"agent":"frist","feld":"Behandlungsbeginn"}]}', 'Dringlicher Behandlungsbedarf: Grenze 14 Tage, hier 18 Tage'),
+-- Kontrollfälle: erst nach dem Nachbessern angelegt, nie zum Tuning verwendet
+('TF08 Kontrollfall Knie korrekt',
+ '{"verordnung_ref":"VO-0008","ausstellungsdatum":"2026-10-02","pruefdatum":"2026-10-12","geplanter_beginn":"2026-10-14","dringlich":false,"icd10":"M17.1","diagnosegruppe":"EX","leitsymptomatik":"b","heilmittel":[{"name":"KG","einheiten":6,"art":"vorrangig"}],"frequenz":"1-2x/Woche","lanr":"123456701","bsnr":"987654300","unterschrift":true,"letzte_behandlung":null,"kostentraeger":"GKV"}',
+ '{"gesamtstatus":"gruen","fehler":[]}', 'Kontrollfall (nicht zum Nachbessern verwendet): Gonarthrose mit EX, regelkonform'),
+('TF09 Kontrollfall HWS mit EX',
+ '{"verordnung_ref":"VO-0009","ausstellungsdatum":"2026-10-07","pruefdatum":"2026-10-12","geplanter_beginn":"2026-10-13","dringlich":false,"icd10":"M50.1","diagnosegruppe":"EX","leitsymptomatik":"a","heilmittel":[{"name":"KG","einheiten":6,"art":"vorrangig"}],"frequenz":"2x/Woche","lanr":"123456701","bsnr":"987654300","unterschrift":true,"letzte_behandlung":null,"kostentraeger":"GKV"}',
+ '{"gesamtstatus":"rot","fehler":[{"agent":"diagnose","feld":"Diagnosegruppe"}]}', 'Kontrollfall: zervikaler Bandscheibenschaden (Wirbelsäule) mit Diagnosegruppe EX'),
+('TF10 Kontrollfall dringlich, fristgerecht',
+ '{"verordnung_ref":"VO-0010","ausstellungsdatum":"2026-10-05","pruefdatum":"2026-10-12","geplanter_beginn":"2026-10-12","dringlich":true,"icd10":"S43.4","diagnosegruppe":"EX","leitsymptomatik":"c","heilmittel":[{"name":"KG","einheiten":6,"art":"vorrangig"}],"frequenz":"2x/Woche","lanr":"123456701","bsnr":"987654300","unterschrift":true,"letzte_behandlung":null,"kostentraeger":"GKV"}',
+ '{"gesamtstatus":"gruen","fehler":[]}', 'Kontrollfall: Schulterdistorsion, dringlich, Beginn nach 7 Tagen (Grenze 14)');
