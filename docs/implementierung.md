@@ -32,7 +32,7 @@
 
 ## Komplexitätsübersicht je Komponente
 
-Legende: **N** = konfigurierter Node · **E** = Expression · **C** = Code-Node · **KI** = AI-Node · *neu* = Sprint 2 (R1)
+Legende: **N** = konfigurierter Node · **E** = Expression · **C** = Code-Node · **KI** = AI-Node · *neu* = Sprint 2 (Verordnungsfall-Prüfung)
 
 | Komponente | Zweck | Input → Output | Art | Warum diese Ebene | Wichtigster Edge Case | Test isoliert | Wartung |
 |---|---|---|---|---|---|---|---|
@@ -40,7 +40,7 @@ Legende: **N** = konfigurierter Node · **E** = Expression · **C** = Code-Node 
 | Verordnung erfassen (+ Schema Verordnung) | Freitext in festes Schema | Text → JSON-Verordnung | KI + N | Freitext braucht Sprachverständnis, Output Parser erzwingt das Schema | Fehlende Angabe wird geraten statt `null` | Testfälle als Text eingeben, JSON vergleichen | Prompt-Pflege |
 | Fristen berechnen | Berechnete Fakten | JSON-Verordnung + Prüfdatum → Fristen, LANR/BSNR-Format, ICD → WS/EX, Summen | C | Datumsarithmetik und Formatregeln sind keine Sprachaufgabe (Evaluation v1–v3) | Genau 28 bzw. 14 Tage, dringlich, bereits begonnene Behandlung | `tests/fakten.test.mjs` (13/13) | JavaScript + HeilM-RL |
 | *neu* Historie abfragen | Frühere Verordnungen desselben Falls | Pseudonym, ICD 3-stellig, Diagnosegruppe, LANR → Liste früherer Verordnungen | N (Supabase, Get many mit Filter) | Einfacher gefilterter Lesezugriff | Keine Historie (erste Verordnung), mehrere Treffer am selben Tag | Seed mit synthetischen Vorverordnungen | n8n-Grundkenntnisse |
-| *neu* Verordnungsfall berechnen | R1 | Historie + aktuelle Verordnung → Einheiten bisher, Summe, orientierende Menge überschritten ja/nein | C | 6-Monats-Regel und Fallabgrenzung (§ 7 HeilM-RL) wären als Node-Kette unlesbar | Lücke genau 6 Monate, anderer Arzt = neuer Fall | Neue Tests in `tests/` | JavaScript + HeilM-RL |
+| *neu* Verordnungsfall berechnen | Verordnungsfall-Prüfung | Historie + aktuelle Verordnung → Einheiten bisher, Summe, orientierende Menge überschritten ja/nein | C | 6-Monats-Regel und Fallabgrenzung (§ 7 HeilM-RL) wären als Node-Kette unlesbar | Lücke genau 6 Monate, anderer Arzt = neuer Fall | Neue Tests in `tests/` | JavaScript + HeilM-RL |
 | Formal-, Diagnose-, Mengen-, Fristen-Prüfer (+ Regelwerk, Embeddings, Schema Befunde) | Prüfung je Mandat mit Fundstelle | Verordnung + Fakten → Befunde im JSON-Schema | KI + N | Regeltext finden und anwenden braucht RAG; Vector Store und Output Parser sind native Nodes | Plausibel klingender, aber falscher Befund | Testfälle je Prüfer, Befunde gegen Soll | Prompt-Pflege, Fachwissen |
 | Befunde sammeln | Vier Ergebnisse zusammenführen | 4 × Befunde → 1 Liste | N (Merge) | Standardfunktion | Ein Prüfer liefert nichts | Ausführungsprotokoll | n8n-Grundkenntnisse |
 | Ergebnis zusammenführen | Ampel und Absetzungsrisiko | Befunde → Ampel, Risiko €, Antworttext | C | Ampelregel muss deterministisch und nachvollziehbar sein | Widersprüchliche Befunde zweier Prüfer | Fixe Befundlisten → erwartete Ampel | JavaScript |

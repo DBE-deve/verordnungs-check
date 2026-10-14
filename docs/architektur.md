@@ -15,7 +15,7 @@
 5. **Ergebnis zusammenführen (Code-Node):** Ampel (rot / gelb / grün), Absetzungsrisiko, Antworttext.
 6. **Protokoll:** Prüfung und Befunde werden in Supabase gespeichert.
 
-**Ab Sprint 2 (R1, Verordnungsfall):** Zwischen Schritt 3 und 4 kommen zwei Komponenten dazu:
+**Ab Sprint 2 (Verordnungsfall-Prüfung):** Zwischen Schritt 3 und 4 kommen zwei Komponenten dazu:
 
 - **Historie abfragen** (Supabase-Node): liest frühere Verordnungen mit demselben Patienten-Pseudonym, derselben ICD-Stelle (3-stellig), Diagnosegruppe und LANR.
 - **Verordnungsfall berechnen** (Code-Node): summiert die Einheiten und prüft die 6-Monats-Regel (§ 7 HeilM-RL).

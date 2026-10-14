@@ -34,7 +34,7 @@ Ein Testfall ohne belegte Fundstelle wird nicht gewertet. Erfahrungen aus der Pr
 |---|---|---|
 | Übersehene rote Verordnung (Soll rot, Ist grün) | **0** | Das ist der teure Fehler: Die Kasse setzt ab. |
 | Kritische Fehlalarme („fehlt“/„fehlerhaft“ ohne Grundlage) | **≤ 1** über alle Fälle | Zu viel Rot und die Rezeption ignoriert das Werkzeug. |
-| R1: berechnete Einheiten im Verordnungsfall | **100 % exakt** | Reine Rechnung im Code, da gibt es keine Toleranz. |
+| Verordnungsfall-Prüfung: berechnete Einheiten im Verordnungsfall | **100 % exakt** | Reine Rechnung im Code, da gibt es keine Toleranz. |
 
 ## Sekundäre Kennzahlen
 
@@ -55,10 +55,10 @@ Das System gilt als **nicht bereit**, wenn eines davon eintritt:
 - Ampel-Trefferquote **unter 80 %**,
 - **mindestens eine** übersehene rote Verordnung,
 - **mehr als 2** kritische Fehlalarme,
-- R1 rechnet in einem Fall falsch.
+- Die Verordnungsfall-Prüfung rechnet in einem Fall falsch.
 
 Zwischen 80 % und 90 % gilt das System als „bedingt bereit“: Die Ursachen werden einzeln benannt, die Schwelle wird nicht nachträglich gesenkt.
 
 ## Zusammensetzung des Testsets (Sprint 3)
 
-Mindestens 12 neue Fälle, davon mindestens 3 grün, 2 gelb (R1: orientierende Menge überschritten), 6 rot (je mindestens 1 je Prüfer) und 1 Grenzfall genau an einer Frist. Keine ICD-Codes aus diesen Fällen in den Prompts.
+Mindestens 12 neue Fälle, davon mindestens 3 grün, 2 gelb (Verordnungsfall-Prüfung: orientierende Menge überschritten), 6 rot (je mindestens 1 je Prüfer) und 1 Grenzfall genau an einer Frist. Keine ICD-Codes aus diesen Fällen in den Prompts.

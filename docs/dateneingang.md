@@ -15,7 +15,7 @@ Der Verordnungs-Check hat drei Datenquellen.
 | Stufe | Eingang | Status |
 |---|---|---|
 | Prototyp | Rezeption tippt die Angaben in den Chat oder fügt sie als Text bzw. JSON ein. Der Agent „Verordnung erfassen“ überführt sie in das feste Schema. | umgesetzt |
-| Demo | **Foto der Verordnung** (Muster 13) im Chat hochladen. Das Sprachmodell liest das Bild aus, danach läuft der bestehende Ablauf. Nur mit selbst ausgefüllten Muster-Formularen und erfundenen Daten. | nur bei Puffer (Entscheidung 13.10.2026: R1 hat Vorrang) |
+| Demo | **Foto der Verordnung** (Muster 13) im Chat hochladen. Das Sprachmodell liest das Bild aus, danach läuft der bestehende Ablauf. Nur mit selbst ausgefüllten Muster-Formularen und erfundenen Daten. | nur bei Puffer (Entscheidung 13.10.2026: Verordnungsfall-Prüfung hat Vorrang) |
 | Echtbetrieb | Übergabe direkt aus der Praxissoftware (Export oder Schnittstelle), abhängig von der eingesetzten Software | Ausblick |
 
 ## 3. Historie für den Verordnungsfall: geplant (Sprint 2)
@@ -60,11 +60,11 @@ Der Verordnungs-Check hat drei Datenquellen.
 
 ### Abgeleitete Prüfregeln
 
-| # | Regel | Umfang |
+| Prüfregel | Inhalt | Umfang |
 |---|---|---|
-| R1 | **Verordnungsfall-Summe:** Einheiten aller Verordnungen im selben Fall (Patient + ICD 3-stellig + Diagnosegruppe + Arzt) summieren und gegen die orientierende Behandlungsmenge stellen | Sprint 2, im Code, 2 neue Testfälle |
-| R2 | **Parallele MLD-Verordnungen:** Gesamte Behandlungszeit je Sitzung gegen den zulässigen Zeitbedarf (Stadium + Anzahl Körperteile) prüfen | Ausbaustufe nach MSIT. *Annahme:* Die genaue Grenze bei parallelen Verordnungen ist noch nicht am Richtlinientext belegt. |
-| R3 | **Doppelabrechnung:** Parallele Verordnungen müssen sich in Diagnosegruppe und Heilmittel unterscheiden | Ausbaustufe nach MSIT. *Annahme:* Regelquelle (HeilM-RL bzw. Rahmenvertrag) noch zu belegen. |
+| Verordnungsfall-Prüfung | Einheiten aller Verordnungen im selben Fall (Patient + ICD 3-stellig + Diagnosegruppe + Arzt) summieren und gegen die orientierende Behandlungsmenge stellen | Sprint 2, im Code, 2 neue Testfälle |
+| Zeitprüfung Lymphdrainage | Bei parallelen Lymphdrainage-Verordnungen die gesamte Behandlungszeit je Sitzung gegen den zulässigen Zeitbedarf (Stadium + Anzahl Körperteile) prüfen | Ausbaustufe nach MSIT. *Annahme:* Die genaue Grenze bei parallelen Verordnungen ist noch nicht am Richtlinientext belegt. |
+| Doppelabrechnungs-Prüfung | Parallele Verordnungen müssen sich in Diagnosegruppe und Heilmittel unterscheiden | Ausbaustufe nach MSIT. *Annahme:* Regelquelle (HeilM-RL bzw. Rahmenvertrag) noch zu belegen. |
 
 Alle drei Regeln nutzen dieselbe Historie aus Abschnitt 3. Die Architektur (n8n, vier Prüfer, Supabase) bleibt unverändert, es kommen nur die Historie-Tabelle und ein Lookup-Knoten dazu.
 
