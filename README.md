@@ -86,6 +86,8 @@ Design-Briefing (Sprint 1): [Scope](docs/scope.md) · [Erfolgskriterien](docs/er
 
 Geplant für Sprint 2: Verordnungsfall-Prüfung (Folgeverordnungen, orientierende Behandlungsmenge), siehe [`docs/dateneingang.md`](docs/dateneingang.md). Foto-Upload nur bei Puffer.
 
+IHK-Präsentation, Arbeitsstand 19.10.2026 (20 Folien, teils Entwurf): [PowerPoint](docs/praesentation/Verordnungs-Check_IHK_Arbeitsstand_2026-10-19.pptx) · [PDF](docs/praesentation/Verordnungs-Check_IHK_Arbeitsstand_2026-10-19.pdf)
+
 Statusmeldung an MSIT (19.10.2026): [PowerPoint](docs/status/Verordnungs-Check_Status_MSIT_2026-10-19.pptx) · [PDF](docs/status/Verordnungs-Check_Status_MSIT_2026-10-19.pdf)
 
 Field Study: Ist-Interview am 16.10.2026, Ergebnisse in [`docs/ist-interview.md`](docs/ist-interview.md). Kernbefund: ca. 90 % der Fehler entstehen bei Doppel- und Folgeverordnungen.
