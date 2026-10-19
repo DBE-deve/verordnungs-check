@@ -4,6 +4,8 @@
 
 Die Praxis ist mit der anonymisierten Verwendung in der Abschlussprüfung einverstanden (F13).
 
+Ausgefüllter Fragebogen: [`field-study/Ist-Interview_Fragebogen_2026-10-16.pdf`](field-study/Ist-Interview_Fragebogen_2026-10-16.pdf)
+
 ## Ergebnisse
 
 | Nr. | Thema | Antwort der Praxis |
