@@ -1,6 +1,6 @@
 # Evaluation
 
-*Verantwortlich: Süle · Testläufe am 13.10.2026 · Modell gpt-4.1-mini (Temperatur 0,1)*
+*Verantwortlich: Derk · Testläufe am 13.10.2026 · Modell gpt-4.1-mini (Temperatur 0,1)*
 
 ## Vorgehen
 

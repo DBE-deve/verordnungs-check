@@ -10,13 +10,13 @@ Physiotherapie-Praxen behandeln auf Kassenrezept und rechnen erst danach ab. Ist
 
 | Frage | Antwort |
 |---|---|
-| **Für wen?** | Die Rezeption einer Physiotherapie-Praxis (ca. 10 Mitarbeitende, zwei Standorte), die neue GKV-Verordnungen annimmt, bevor die erste Behandlung terminiert wird. *Annahme:* 1–2 Personen an der Rezeption, Zahl der Verordnungen pro Woche im Ist-Interview klären. |
+| **Für wen?** | Die Rezeption einer Physiotherapie-Praxis (ca. 10 Mitarbeitende, zwei Standorte), die neue GKV-Verordnungen annimmt, bevor die erste Behandlung terminiert wird. Laut Ist-Interview ca. 40 neue Kassenverordnungen pro Woche, heute ca. 8 min Prüfaufwand je Verordnung ([`ist-interview.md`](ist-interview.md)). |
 | **Was genau macht es?** | Es nimmt eine Heilmittelverordnung Physiotherapie (Muster 13) als Text im Chat entgegen und prüft sie gegen Heilmittel-Richtlinie, Heilmittelkatalog und KBV-Diagnoseliste. Zusätzlich summiert es die Einheiten aller früher geprüften Verordnungen im selben Verordnungsfall (Verordnungsfall-Prüfung). Ergebnis: eine Ampel mit Korrekturhinweisen und Fundstellen. |
 | **Was macht es ausdrücklich nicht?** | Siehe Ausschlüsse unten. |
 
 ## Erste Erfolgskennzahl
 
-Das System gibt bei mindestens **90 % von mindestens 12 neuen, vorher ungesehenen Testverordnungen** die richtige Ampel aus und übersieht **keine** rote Verordnung. Die genaue Fassung steht in [`erfolgskriterien.md`](erfolgskriterien.md).
+Das System gibt bei mindestens **98 % von mindestens 50 neuen, vorher ungesehenen Testverordnungen** die richtige Ampel aus und übersieht **keine** rote Verordnung. Die genaue Fassung steht in [`erfolgskriterien.md`](erfolgskriterien.md).
 
 ## Ausdrücklich außerhalb des Scopes
 

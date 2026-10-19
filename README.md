@@ -62,16 +62,17 @@ Details: [docs/architektur.md](docs/architektur.md)
 | `supabase/migrations/` | Datenbankschema |
 | `supabase/seed/` | Synthetische Testverordnungen (7 Testfälle + 3 Kontrollfälle) |
 | `tests/` | Automatische Tests für den Code-Anteil (`node tests/fakten.test.mjs`) |
-| `docs/` | Design-Briefing (Scope, Erfolgskriterien, Implementierungsweg, Architektur, Build-Plan), Dateneingang, Evaluation, Governance |
+| `docs/` | Design-Briefing (Scope, Erfolgskriterien, Implementierungsweg, Architektur, Build-Plan), Dateneingang, Ist-Interview, Evaluation, Governance |
 
 ## Team
 
 | Name | Rolle |
 |---|---|
-| Thomas Kullmann | Analyse & Business Case, Projektleitung |
-| Valentin | Tools & Architektur |
-| Derk | Build & Demo |
-| Süle | Evaluation & Governance |
+| Thomas Kullmann | Koordination, Ist/Soll-Analyse & Business Case |
+| Valentin | Tools, Architektur & Governance |
+| Derk | Build, Demo & Evaluation |
+
+Seit 19.10.2026 arbeitet das Team zu dritt.
 
 ## Status
 
@@ -85,4 +86,6 @@ Design-Briefing (Sprint 1): [Scope](docs/scope.md) · [Erfolgskriterien](docs/er
 
 Geplant für Sprint 2: Verordnungsfall-Prüfung (Folgeverordnungen, orientierende Behandlungsmenge), siehe [`docs/dateneingang.md`](docs/dateneingang.md). Foto-Upload nur bei Puffer.
 
-Offen: Ist-Interview mit der Praxis, Business Case, EU-AI-Act-Einordnung, Präsentation.
+Field Study: Ist-Interview am 16.10.2026, Ergebnisse in [`docs/ist-interview.md`](docs/ist-interview.md). Kernbefund: ca. 90 % der Fehler entstehen bei Doppel- und Folgeverordnungen.
+
+Offen: Business Case, EU-AI-Act-Einordnung, Präsentation.

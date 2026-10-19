@@ -1,6 +1,8 @@
 # Erfolgskriterien
 
-*Sprint 1 · Stand 13.10.2026 · Verantwortlich: Süle · gilt für die formale Evaluation in Sprint 3*
+*Sprint 1 · Stand 19.10.2026 · Verantwortlich: Derk · gilt für die formale Evaluation in Sprint 3*
+
+> **Änderung 19.10.2026:** Zielwert nach Rückmeldung der Instruktorin von 90 % auf **98 %** angehoben, Testset deshalb von 12 auf **50 Fälle** vergrößert (Begründung unten).
 
 ## Referenzstandard
 
@@ -22,7 +24,7 @@ Ein Testfall ohne belegte Fundstelle wird nicht gewertet. Erfahrungen aus der Pr
 
 ## Primäre Kennzahl
 
-**Ampel-Trefferquote ≥ 90 %** auf einem neuen Testset von **mindestens 12 Fällen**, die nie zum Nachbessern der Prompts verwendet wurden.
+**Ampel-Trefferquote ≥ 98 %** auf einem neuen Testset von **mindestens 50 Fällen**, die nie zum Nachbessern der Prompts verwendet wurden. Bei 50 Fällen heißt das: höchstens **eine** falsche Ampel.
 
 - **Korrekt** heißt: Die ausgegebene Ampel stimmt mit der Soll-Ampel überein.
 - **Grenzfall:** Ampel richtig, aber der Befund kommt vom falschen Prüfer oder nennt das falsche Feld. Das zählt für die Primärkennzahl als bestanden und wird in der Sekundärkennzahl „Befund-Genauigkeit“ als Fehler gezählt.
@@ -40,9 +42,9 @@ Ein Testfall ohne belegte Fundstelle wird nicht gewertet. Erfahrungen aus der Pr
 
 | Kennzahl | Ziel |
 |---|---|
-| Befund-Genauigkeit (richtiger Prüfer und richtiges Feld je erwartetem Fehler) | ≥ 90 % |
+| Befund-Genauigkeit (richtiger Prüfer und richtiges Feld je erwartetem Fehler) | ≥ 95 % |
 | Fundstelle bei jedem Befund „fehlt“, „fehlerhaft“ oder „hinweis“ vorhanden | 100 % |
-| Stabilität (gleiche Ampel in allen 3 Läufen) | ≥ 90 % der Fälle |
+| Stabilität (gleiche Ampel in allen 3 Läufen) | ≥ 95 % der Fälle |
 | Laufzeit je Prüfung | ≤ 30 s |
 | Kosten je Prüfung | ≤ 5 Cent |
 
@@ -52,13 +54,30 @@ Zur Einordnung, der Stand von v4 (13.10.2026, 10 Fälle, je 1 Lauf): 10/10 Ampel
 
 Das System gilt als **nicht bereit**, wenn eines davon eintritt:
 
-- Ampel-Trefferquote **unter 80 %**,
+- Ampel-Trefferquote **unter 95 %** (mehr als 2 falsche Ampeln bei 50 Fällen),
 - **mindestens eine** übersehene rote Verordnung,
 - **mehr als 2** kritische Fehlalarme,
 - Die Verordnungsfall-Prüfung rechnet in einem Fall falsch.
 
-Zwischen 80 % und 90 % gilt das System als „bedingt bereit“: Die Ursachen werden einzeln benannt, die Schwelle wird nicht nachträglich gesenkt.
+Zwischen 95 % und 98 % gilt das System als „bedingt bereit“: Die Ursachen werden einzeln benannt, die Schwelle wird nicht nachträglich gesenkt.
 
 ## Zusammensetzung des Testsets (Sprint 3)
 
-Mindestens 12 neue Fälle, davon mindestens 3 grün, 2 gelb (Verordnungsfall-Prüfung: orientierende Menge überschritten), 6 rot (je mindestens 1 je Prüfer) und 1 Grenzfall genau an einer Frist. Keine ICD-Codes aus diesen Fällen in den Prompts.
+Mindestens 50 neue Fälle:
+
+| Art | Anzahl | Inhalt |
+|---|---|---|
+| grün | ≥ 12 | regelkonform, darunter Folgeverordnungen innerhalb der Menge |
+| gelb | ≥ 8 | Verordnungsfall-Prüfung: orientierende Menge überschritten |
+| rot | ≥ 25 | je Prüfer mindestens 5 |
+| Grenzfall | ≥ 5 | genau an einer Frist oder Mengengrenze |
+
+Schwerpunkt Folgeverordnungen: Laut Ist-Interview entstehen ca. 90 % der Fehler bei Doppel- und Folgeverordnungen ([`ist-interview.md`](ist-interview.md)). Keine ICD-Codes aus diesen Fällen in den Prompts.
+
+## Warum 50 Fälle
+
+Mit 12 Fällen lässt sich 98 % nicht messen: Schon eine falsche Ampel ergibt 92 %. Erst ab 50 Fällen erlaubt das Ziel genau einen Fehler. Mit 3 Läufen je Fall sind das 150 Prüfungen, nach heutigem Stand ca. 1 Stunde Laufzeit und ca. 5–6 € Modellkosten.
+
+*Einordnung:* 50 Fälle sind ein Funktionsnachweis, kein statistischer Beweis für 98 % im Betrieb. Dafür dient der Parallelbetrieb im Pilot: Die Rezeption prüft einige Wochen wie bisher, das System läuft mit (Zusage der Praxis, F11).
+
+*Vergleich:* Menschliche Doppelkontrollen sind laut Praxis bzw. Literatur höchstens etwa 85 % wirksam.

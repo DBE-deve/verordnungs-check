@@ -1,6 +1,6 @@
 # Governance
 
-*Verantwortlich: Süle*
+*Verantwortlich: Valentin*
 
 ## Datenschutz (DSGVO)
 
