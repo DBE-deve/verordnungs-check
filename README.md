@@ -62,6 +62,7 @@ Details: [docs/architektur.md](docs/architektur.md)
 | `supabase/migrations/` | Datenbankschema |
 | `supabase/seed/` | Synthetische Testverordnungen (7 Testfälle + 3 Kontrollfälle) |
 | `tests/` | Automatische Tests für den Code-Anteil (`node tests/fakten.test.mjs`) |
+| `docs/projektarbeit/` | Schriftliche IHK-Projektarbeit, ein Dokument je Kapitel |
 | `docs/` | Design-Briefing (Scope, Erfolgskriterien, Implementierungsweg, Architektur, Build-Plan), Dateneingang, Ist-Interview, Evaluation, Governance |
 
 ## Team
@@ -69,8 +70,8 @@ Details: [docs/architektur.md](docs/architektur.md)
 | Name | Rolle |
 |---|---|
 | Thomas Kullmann | Koordination, Ist/Soll-Analyse & Business Case |
-| Valentin | Tools, Architektur & Governance |
-| Derk | Build, Demo & Evaluation |
+| Valentin Klamka | Tools, Architektur & Governance |
+| Derk Ermler | Build, Demo & Evaluation |
 
 Seit 19.10.2026 arbeitet das Team zu dritt.
 
@@ -92,4 +93,6 @@ Statusmeldung an MSIT (19.10.2026): [PowerPoint](docs/status/Verordnungs-Check_S
 
 Field Study: Ist-Interview am 16.10.2026, Ergebnisse in [`docs/ist-interview.md`](docs/ist-interview.md). Kernbefund: ca. 90 % der Fehler entstehen bei Doppel- und Folgeverordnungen.
 
-Offen: Business Case, EU-AI-Act-Einordnung, Präsentation.
+Schriftliche IHK-Projektarbeit: Gerüst mit sechs Kapiteln, Verantwortlichen und offenen Lücken in [`docs/projektarbeit/`](docs/projektarbeit/README.md).
+
+Offen: Business Case als Text, EU-AI-Act-Einordnung, Evaluation mit 50 Fällen.
