@@ -61,7 +61,7 @@ Details: [docs/architektur.md](docs/architektur.md)
 | `n8n/` | Exportierte Workflows (.json) |
 | `supabase/migrations/` | Datenbankschema |
 | `supabase/seed/` | Synthetische Testverordnungen (7 Testfälle + 3 Kontrollfälle) |
-| `tests/` | Automatische Tests für den Code-Anteil (`node tests/fakten.test.mjs`) |
+| `tests/` | Code-Tests (`node tests/fakten.test.mjs`) und Testbatterie, Gebrauchsanweisung in `tests/README.md` |
 | `docs/projektarbeit/` | Schriftliche IHK-Projektarbeit, ein Dokument je Kapitel |
 | `docs/` | Design-Briefing (Scope, Erfolgskriterien, Implementierungsweg, Architektur, Build-Plan), Dateneingang, Ist-Interview, Evaluation, Governance |
 

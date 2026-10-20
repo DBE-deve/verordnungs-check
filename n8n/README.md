@@ -21,3 +21,4 @@ Stand der Exporte: Version v4 nach der Evaluation vom 13.10.2026 (siehe `docs/ev
 - **Fristen-Prüfer ohne Vektorsuche:** wie in Valentins Stand; die Fundstelle (HeilM-RL § 15/§ 16) steht im Prompt.
 - **Datenbank:** setzt Migration `002_diagnose_auswahl.sql` voraus (Spalte `diagnose_auswahl` in `pruefungen`).
 - **Fallback:** `vier-pruefer.json` (v4) bleibt unverändert und lauffähig.
+- **Änderungen seit dem Merge:** siehe [`docs/aenderungsprotokoll.md`](../docs/aenderungsprotokoll.md).

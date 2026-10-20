@@ -482,7 +482,7 @@ TEIL_A = [
     ("TF01", "JSON", "Vollständig und regelkonform", "grün", "–", "v4: grün ✅ · Merge (Ausführung 897): grün, 18/18 ok ✅"),
     ("TF02", "JSON", "Beginn 41 Tage nach Ausstellung", "rot", "Fristen: Behandlungsbeginn", "v4: rot ✅"),
     ("TF03", "JSON / Freitext", "Schulter-Code M75.1 mit WS", "rot", "Diagnose: Diagnosegruppe",
-     "v4: rot ✅ · Merge als Freitext (898): rot ✅, aber Fehlalarm Mengen-Prüfer ❌ → Regressionstest nach Prompt-Fix"),
+     "v4: rot ✅ · Merge als Freitext (898): rot, aber Fehlalarm Mengen-Prüfer ❌ · nach Prompt-Fix (901): rot, nur Diagnose ✅"),
     ("TF04", "JSON", "10 Einheiten bei WS", "rot", "Mengen: Einheiten", "v4: rot ✅"),
     ("TF05", "JSON", "Leitsymptomatik und LANR fehlen", "rot", "Formal: Leitsymptomatik, LANR", "v4: rot ✅"),
     ("TF06", "JSON", "22 Tage Unterbrechung ohne Grund", "rot", "Fristen: Unterbrechung", "v4: rot ✅"),
@@ -639,7 +639,7 @@ w("## Auffälligkeiten beim Erstellen")
 w("")
 w("1. **TF10 ist nach Regelwerk vermutlich falsch bewertet.** Der Heilmittelkatalog kennt für EX (und WS) nur die Leitsymptomatik a, b und x. TF10 nutzt „c“ und erwartet grün. Formal- und Diagnose-Prüfer akzeptieren „c“ laut Prompt. Prüft die Stelle im Katalog; dann Soll von TF10 auf rot setzen und Prompts anpassen (Grenzfall TF{}).".format(
     next(f["id"][2:] for f in FALL if f["titel"] == "Leitsymptomatik c bei EX")))
-w("2. **Frequenz-Hinweise widersprechen dem Regelwerk.** Nach HeilM-RL § 12 Abs. 1 Satz 4 darf der Arzt ohne zusätzliche Dokumentation von der Frequenzempfehlung abweichen. Ein Hinweis bei 4×/Woche wäre ein Fehlalarm.")
+w("2. **Frequenz-Hinweise widersprechen dem Regelwerk.** Nach HeilM-RL § 12 Abs. 1 Satz 4 darf der Arzt ohne zusätzliche Dokumentation von der Frequenzempfehlung abweichen. Ein Hinweis bei 4×/Woche wäre ein Fehlalarm. *Im Merge-Workflow am 20.10.2026 behoben, siehe `docs/aenderungsprotokoll.md`; v4 unverändert.*")
 w("3. **Zweitcode beim besonderen Verordnungsbedarf.** Bei M50.1, M51.1, M47.2-, M48.0- und Z96.6- verlangt die KBV-Liste den Zweitcode. Ohne ihn gibt es keinen Hinweis (Grenzfall TF{}). M75.1 steht ohne Zweitcode auf der Liste: Grüne Fälle mit M75.1 und EX gibt es deshalb nicht.".format(
     next(f["id"][2:] for f in FALL if f["titel"] == "M50.1 ohne Zweitcode G55.1")))
 w("4. **Zulässigkeit des ergänzenden Heilmittels hat keinen Prüfer.** Traktion ist nur bei WS vorgesehen. Klären, ob der Mengen-Prüfer das ins Mandat bekommt.")
