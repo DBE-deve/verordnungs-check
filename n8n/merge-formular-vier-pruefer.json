@@ -1,0 +1,1386 @@
+{
+  "name": "Verordnungs-Check – Merge (Formular + Vier Prüfer)",
+  "nodes": [
+    {
+      "id": "b9375ba6-dcc0-4636-a7e4-ea8975a3ffa1",
+      "name": "Rezeption: Verordnung eingeben",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        0,
+        1072
+      ],
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hallo! Füge die Angaben einer Heilmittelverordnung ein – als Text oder JSON.\nVier Prüfer checken Formalien, Diagnose, Mengen und Fristen.",
+        "options": {
+          "inputPlaceholder": "Verordnungsdaten einfügen …",
+          "subtitle": "Prototyp mit synthetischen Daten – keine echten Patientendaten eingeben",
+          "title": "Verordnungs-Check",
+          "responseMode": "lastNode"
+        }
+      }
+    },
+    {
+      "id": "fd76ab1a-8c5b-4823-a2f4-f1f4e95bc8f2",
+      "name": "Eingabe prüfen",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        32,
+        1240
+      ],
+      "parameters": {
+        "jsCode": "// Entscheidet, ob die Eingabe bereits eine strukturierte Verordnung ist (Formular,\n// JSON aus der Praxissoftware) oder Freitext, den der Extraktor lesen muss.\n// Strukturierte Eingaben überspringen den LLM-Extraktor – schneller und deterministisch.\nconst j = $json;\nconst kandidat =\n  j.chatInput ??\n  j.body?.verordnung ?? j.body ??\n  j.verordnung ??\n  j.eingabe?.verordnung ??\n  j;\n\nlet verordnung = null;\nif (typeof kandidat === \"string\") {\n  try {\n    const geparst = JSON.parse(kandidat);\n    verordnung = geparst && geparst.verordnung ? geparst.verordnung : geparst;\n  } catch {\n    // kein JSON – bleibt Freitext\n  }\n} else if (kandidat && typeof kandidat === \"object\") {\n  verordnung = kandidat.verordnung ?? kandidat;\n}\n\nconst schluessel = [\"icd10\", \"diagnosen\", \"heilmittel\", \"ausstellungsdatum\", \"patient\"];\nconst strukturiert = !!verordnung && schluessel.some((k) => verordnung[k] !== undefined && verordnung[k] !== null);\n\nreturn [{ json: {\n  modus: strukturiert ? \"strukturiert\" : \"freitext\",\n  verordnung: strukturiert ? verordnung : null,\n  text: typeof kandidat === \"string\" ? kandidat : String(j.chatInput ?? JSON.stringify(kandidat))\n} }];"
+      }
+    },
+    {
+      "id": "aed47315-4d4a-434f-80d6-1ae054457e16",
+      "name": "Formular: Verordnung erfassen",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        0,
+        1472
+      ],
+      "parameters": {
+        "path": "verordnungs-check-merge",
+        "formTitle": "Verordnungs-Check – Heilmittelverordnung",
+        "formDescription": "Prototyp mit synthetischen Daten – keine echten Patientendaten eingeben. Ausfüllen wie auf dem Vordruck Muster 13, dann prüfen lassen.",
+        "formFields": {
+          "values": [
+            {
+              "fieldName": "krankenkasse",
+              "fieldLabel": "Krankenkasse bzw. Kostenträger",
+              "fieldType": "text",
+              "requiredField": true
+            },
+            {
+              "fieldName": "nachname",
+              "fieldLabel": "Nachname der versicherten Person",
+              "fieldType": "text",
+              "requiredField": true
+            },
+            {
+              "fieldName": "vorname",
+              "fieldLabel": "Vorname",
+              "fieldType": "text"
+            },
+            {
+              "fieldName": "geburtsdatum",
+              "fieldLabel": "Geburtsdatum",
+              "fieldType": "date"
+            },
+            {
+              "fieldName": "kostentraegerkennung",
+              "fieldLabel": "Kostenträgerkennung",
+              "fieldType": "text"
+            },
+            {
+              "fieldName": "versichertennummer",
+              "fieldLabel": "Versicherten-Nr.",
+              "fieldType": "text"
+            },
+            {
+              "fieldName": "versichertenstatus",
+              "fieldLabel": "Status",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Mitglied"
+                  },
+                  {
+                    "option": "Familienangehöriger"
+                  },
+                  {
+                    "option": "Rentner"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldName": "bsnr",
+              "fieldLabel": "Betriebsstätten-Nr. (BSNR, 9-stellig)",
+              "fieldType": "text",
+              "requiredField": true
+            },
+            {
+              "fieldName": "lanr",
+              "fieldLabel": "Arzt-Nr. (LANR, 9-stellig)",
+              "fieldType": "text",
+              "requiredField": true
+            },
+            {
+              "fieldName": "ausstellungsdatum",
+              "fieldLabel": "Ausstellungsdatum",
+              "fieldType": "date",
+              "requiredField": true
+            },
+            {
+              "fieldName": "heilmittelbereich",
+              "fieldLabel": "Heilmittelbereich",
+              "fieldType": "dropdown",
+              "requiredField": true,
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Physiotherapie"
+                  },
+                  {
+                    "option": "Podologische Therapie"
+                  },
+                  {
+                    "option": "Stimm-, Sprech-, Sprach- und Schlucktherapie"
+                  },
+                  {
+                    "option": "Ergotherapie"
+                  },
+                  {
+                    "option": "Ernährungstherapie"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldName": "zuzahlung",
+              "fieldLabel": "Zuzahlung",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Zuzahlung frei"
+                  },
+                  {
+                    "option": "Zuzahlungspflichtig"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldName": "unfallfolgen",
+              "fieldLabel": "Unfallfolgen (sonstiger Unfall, keine Arbeitsunfälle)",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "nein"
+                  },
+                  {
+                    "option": "ja"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldName": "bvg_ser",
+              "fieldLabel": "BVG / SER (besonderer Versorgungsbedarf)",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "nein"
+                  },
+                  {
+                    "option": "ja"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldName": "icd10",
+              "fieldLabel": "ICD-10-Code Zeile 1 (Anlass der Verordnung)",
+              "fieldType": "text",
+              "requiredField": true
+            },
+            {
+              "fieldName": "icd10_bezeichnung",
+              "fieldLabel": "Bezeichnung zu Zeile 1",
+              "fieldType": "text"
+            },
+            {
+              "fieldName": "icd10_2",
+              "fieldLabel": "ICD-10-Code Zeile 2 (optional, z. B. Diagnoseliste)",
+              "fieldType": "text"
+            },
+            {
+              "fieldName": "icd10_2_bezeichnung",
+              "fieldLabel": "Bezeichnung zu Zeile 2",
+              "fieldType": "text"
+            },
+            {
+              "fieldName": "diagnosegruppe",
+              "fieldLabel": "Diagnosegruppe (z. B. WS, EX)",
+              "fieldType": "text",
+              "requiredField": true
+            },
+            {
+              "fieldName": "leitsymptomatik",
+              "fieldLabel": "Leitsymptomatik gemäß Heilmittelkatalog",
+              "fieldType": "dropdown",
+              "requiredField": true,
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "a"
+                  },
+                  {
+                    "option": "b"
+                  },
+                  {
+                    "option": "c"
+                  },
+                  {
+                    "option": "x – patientenindividuell"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldName": "leitsymptomatik_freitext",
+              "fieldLabel": "Leitsymptomatik als Freitext (bei x)",
+              "fieldType": "textarea"
+            },
+            {
+              "fieldName": "heilmittel_1",
+              "fieldLabel": "Heilmittel 1 (z. B. KG)",
+              "fieldType": "text",
+              "requiredField": true
+            },
+            {
+              "fieldName": "einheiten_1",
+              "fieldLabel": "Behandlungseinheiten Heilmittel 1",
+              "fieldType": "number",
+              "requiredField": true
+            },
+            {
+              "fieldName": "heilmittel_2",
+              "fieldLabel": "Heilmittel 2",
+              "fieldType": "text"
+            },
+            {
+              "fieldName": "einheiten_2",
+              "fieldLabel": "Behandlungseinheiten Heilmittel 2",
+              "fieldType": "number"
+            },
+            {
+              "fieldName": "heilmittel_3",
+              "fieldLabel": "Heilmittel 3",
+              "fieldType": "text"
+            },
+            {
+              "fieldName": "einheiten_3",
+              "fieldLabel": "Behandlungseinheiten Heilmittel 3",
+              "fieldType": "number"
+            },
+            {
+              "fieldName": "ergaenzendes_heilmittel",
+              "fieldLabel": "Ergänzendes Heilmittel",
+              "fieldType": "text"
+            },
+            {
+              "fieldName": "einheiten_ergaenzend",
+              "fieldLabel": "Behandlungseinheiten ergänzendes Heilmittel",
+              "fieldType": "number"
+            },
+            {
+              "fieldName": "frequenz",
+              "fieldLabel": "Therapiefrequenz (z. B. 2x pro Woche)",
+              "fieldType": "text",
+              "requiredField": true
+            },
+            {
+              "fieldName": "therapiebericht",
+              "fieldLabel": "Therapiebericht erforderlich",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "nein"
+                  },
+                  {
+                    "option": "ja"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldName": "hausbesuch",
+              "fieldLabel": "Hausbesuch erforderlich",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "nein"
+                  },
+                  {
+                    "option": "ja"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldName": "dringlich",
+              "fieldLabel": "Dringlicher Behandlungsbedarf (Beginn innerhalb 14 Tagen)",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "nein"
+                  },
+                  {
+                    "option": "ja"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldName": "therapieziele",
+              "fieldLabel": "Therapieziele / weitere Hinweise",
+              "fieldType": "textarea"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "e86680c2-8b46-4c41-88f0-69820fa901a0",
+      "name": "Verordnung bauen",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        1472
+      ],
+      "parameters": {
+        "jsCode": "// Bildet die Formularfelder auf das Verordnung-Schema des Prüf-Workflows ab.\n// Fehlende Angaben werden null – geraten wird nichts.\nconst f = $input.first().json;\n\nconst text = (v) => (v === undefined || v === null || String(v).trim() === \"\" ? null : String(v).trim());\nconst zahl = (v) => {\n  const t = String(v ?? \"\").replace(\",\", \".\").trim();\n  if (!t) return null;\n  const n = Number(t);\n  return Number.isFinite(n) ? n : null;\n};\nconst iso = (v) => {\n  const t = text(v);\n  if (!t) return null;\n  const de = /^(\\d{1,2})\\.(\\d{1,2})\\.(\\d{4})$/.exec(t);\n  if (de) return de[3] + \"-\" + de[2].padStart(2, \"0\") + \"-\" + de[1].padStart(2, \"0\");\n  return t.slice(0, 10);\n};\n\nconst bereiche = {\n  \"Physiotherapie\": \"physiotherapie\",\n  \"Podologische Therapie\": \"podologie\",\n  \"Stimm-, Sprech-, Sprach- und Schlucktherapie\": \"ssss\",\n  \"Ergotherapie\": \"ergotherapie\",\n  \"Ernährungstherapie\": \"ernaehrung\"\n};\nconst ls = text(f.leitsymptomatik);\n\nconst heilmittel = [];\nfor (const i of [1, 2, 3]) {\n  const name = text(f[\"heilmittel_\" + i]);\n  if (name) heilmittel.push({ name, einheiten: zahl(f[\"einheiten_\" + i]), art: \"vorrangig\" });\n}\nconst ergaenzend = text(f.ergaenzendes_heilmittel);\n\nconst jetzt = new Date();\nconst heute = jetzt.toISOString().slice(0, 10);\nconst uhrzeit = String(jetzt.getHours()).padStart(2, \"0\") + String(jetzt.getMinutes()).padStart(2, \"0\");\nconst krankenkasse = text(f.krankenkasse);\nconst code2 = (text(f.icd10_2) || \"\").toUpperCase() || null;\n\nconst verordnung = {\n  verordnung_ref: \"VO-\" + heute.replace(/-/g, \"\") + \"-\" + uhrzeit,\n  patient: {\n    krankenkasse,\n    nachname: text(f.nachname),\n    vorname: text(f.vorname),\n    geburtsdatum: iso(f.geburtsdatum),\n    kostentraegerkennung: text(f.kostentraegerkennung),\n    versichertennummer: text(f.versichertennummer),\n    versichertenstatus: text(f.versichertenstatus)\n  },\n  bsnr: text(f.bsnr),\n  lanr: text(f.lanr),\n  ausstellungsdatum: iso(f.ausstellungsdatum),\n  pruefdatum: heute,\n  geplanter_beginn: null,\n  zuzahlung: text(f.zuzahlung) === \"Zuzahlung frei\" ? \"frei\" : text(f.zuzahlung) === \"Zuzahlungspflichtig\" ? \"pflicht\" : null,\n  unfallfolgen: f.unfallfolgen === \"ja\",\n  bvg_ser: f.bvg_ser === \"ja\",\n  heilmittelbereich: bereiche[text(f.heilmittelbereich)] ?? null,\n  icd10: (text(f.icd10) || \"\").toUpperCase() || null,\n  icd10_bezeichnung: text(f.icd10_bezeichnung),\n  weitere_diagnosen: code2 ? [{ code: code2, bezeichnung: text(f.icd10_2_bezeichnung) }] : [],\n  nicht_verordnungsrelevant: [],\n  diagnosen: [\n    ...(text(f.icd10) ? [{ code: text(f.icd10).toUpperCase(), bezeichnung: text(f.icd10_bezeichnung), anlass: true }] : []),\n    ...(code2 ? [{ code: code2, bezeichnung: text(f.icd10_2_bezeichnung), anlass: false }] : [])\n  ],\n  diagnosegruppe: (text(f.diagnosegruppe) || \"\").toUpperCase() || null,\n  leitsymptomatik: ls ? ls.charAt(0).toLowerCase() : null,\n  leitsymptomatik_freitext: text(f.leitsymptomatik_freitext),\n  heilmittel,\n  ergaenzendes_heilmittel: ergaenzend ? { name: ergaenzend, einheiten: zahl(f.einheiten_ergaenzend) } : { name: null, einheiten: null },\n  frequenz: text(f.frequenz),\n  therapiebericht: f.therapiebericht === \"ja\",\n  hausbesuch: f.hausbesuch === \"ja\",\n  dringlich: f.dringlich === \"ja\",\n  therapieziele_hinweise: text(f.therapieziele),\n  arzt: { name: null, fachrichtung: null, betriebsstaette: null },\n  unterschrift: true,\n  letzte_behandlung: null,\n  unterbrechungsgrund: null,\n  kostentraeger: krankenkasse,\n  quelle: \"formular\"\n};\n\nreturn [{ json: { verordnung } }];"
+      }
+    },
+    {
+      "id": "2979679c-343c-4c79-881a-221639b6e554",
+      "name": "Verordnung strukturiert?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        1240
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "modus-ist-json",
+              "leftValue": "={{ $json.modus }}",
+              "rightValue": "strukturiert",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "a0e02f82-fb0e-486b-acae-9020fbafed22",
+      "name": "Verordnung übernehmen",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        424,
+        1400
+      ],
+      "parameters": {
+        "jsCode": "// Reicht die im Formular bzw. von der Praxissoftware gewählte Verordnung an die\n// Prüfkette weiter. Die zwei ICD-Zeilen sind hier bereits entschieden – anders als\n// beim Freitext, wo \"Diagnosen auswählen\" sie erst bestimmt.\nconst vo = { ...$json.verordnung };\nconst diagnosen = Array.isArray(vo.diagnosen) ? vo.diagnosen : [];\n\nvo.icd10 = vo.icd10 ?? diagnosen[0]?.code ?? null;\nvo.icd10_bezeichnung = vo.icd10_bezeichnung ?? diagnosen[0]?.bezeichnung ?? null;\nif (!Array.isArray(vo.weitere_diagnosen)) {\n  vo.weitere_diagnosen = diagnosen[1] ? [{ code: diagnosen[1].code, bezeichnung: diagnosen[1].bezeichnung ?? null }] : [];\n}\nvo.nicht_verordnungsrelevant = vo.nicht_verordnungsrelevant ?? [];\nvo.quelle = \"formular\";\n\nreturn [{ json: { output: vo } }];"
+      }
+    },
+    {
+      "id": "fa8ab8e4-4c2e-4627-82ee-cf76f6888570",
+      "name": "Fristen berechnen",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        576,
+        1072
+      ],
+      "parameters": {
+        "jsCode": "const vo = $input.first().json.output;\nconst d = (s) => (s ? new Date(s + 'T00:00:00Z') : null);\nconst tage = (a, b) => (a && b ? Math.round((b - a) / 86400000) : null);\nconst aus = d(vo.ausstellungsdatum);\nconst pruef = d(vo.pruefdatum);\nconst beginn = d(vo.geplanter_beginn) || pruef;\nconst letzte = d(vo.letzte_behandlung);\nconst grenze = vo.dringlich ? 14 : 28;\nconst bereitsBegonnen = !!letzte;\nconst tageBisBeginn = bereitsBegonnen ? null : tage(aus, beginn);\nconst unterbrechung = letzte ? tage(letzte, beginn) : null;\nconst hm = Array.isArray(vo.heilmittel) ? vo.heilmittel : [];\n// ICD-10-Bereich -> Körperregion (Kapitelstruktur ICD-10-GM, nur Muskel-Skelett; sonst null = LLM prüft mit RAG)\nconst icdRegion = (code) => {\n  if (!code) return null;\n  const m = String(code).toUpperCase().match(/^([A-Z])(\\d{2})/);\n  if (!m) return null;\n  const k = m[1], n = Number(m[2]);\n  if (k === 'M' && n >= 40 && n <= 54) return 'WS';                 // Krankheiten der Wirbelsäule und des Rückens\n  if (k === 'S' && [12, 13, 22, 23, 32, 33].includes(n)) return 'WS'; // Verletzungen Hals-, Brust-, Lendenwirbelsäule\n  if (k === 'M' && n >= 15 && n <= 25) return 'EX';                 // Arthrosen und sonstige Gelenkkrankheiten\n  if (k === 'M' && [75, 76, 77].includes(n)) return 'EX';           // Schulter, untere Extremität, Enthesopathien\n  if (k === 'S' && n >= 40 && n <= 99) return 'EX';                 // Verletzungen Schulter bis Fuß\n  return null;\n};\nconst region = icdRegion(vo.icd10);\nconst dg = vo.diagnosegruppe ? String(vo.diagnosegruppe).toUpperCase().trim() : null;\nconst ist_marker = (wert) => /^\\[[^\\]]+\\]$/.test(String(wert ?? '').trim());\n// Marker = redigiert: Feld ausgefüllt, Format nicht prüfbar (null), nicht fehlerhaft (false).\nconst formatOk = (wert) => (vorhanden(wert) && !ist_marker(wert) ? /^\\d{9}$/.test(String(wert).trim()) : null);\nconst vorhanden = (wert) => wert !== null && wert !== undefined && String(wert).trim() !== '';\n// Pflichtangaben deterministisch aus dem Original – nach der PII-Redaktion stehen bei LANR/BSNR nur Marker.\nconst pflichtangaben = {\n  kostentraeger: vorhanden(vo.patient?.krankenkasse) || vorhanden(vo.kostentraeger),\n  lanr: vorhanden(vo.lanr),\n  bsnr: vorhanden(vo.bsnr),\n  ausstellungsdatum: vorhanden(vo.ausstellungsdatum),\n  unterschrift: vo.unterschrift === true,\n  icd10: vorhanden(vo.icd10) || (Array.isArray(vo.diagnosen) && vo.diagnosen.length > 0),\n  diagnosegruppe: vorhanden(vo.diagnosegruppe),\n  leitsymptomatik: vorhanden(vo.leitsymptomatik) || vorhanden(vo.leitsymptomatik_freitext),\n  heilmittel_mit_einheiten: hm.some((h) => Number(h.einheiten) > 0),\n  frequenz: vorhanden(vo.frequenz)\n};\nconst fakten = {\n  frist_grenze_tage: grenze,\n  dringlich: !!vo.dringlich,\n  bereits_begonnen: bereitsBegonnen,\n  tage_ausstellung_bis_beginn: tageBisBeginn,\n  beginn_fristgerecht: tageBisBeginn === null ? null : tageBisBeginn <= grenze,\n  tage_unterbrechung: unterbrechung,\n  unterbrechung_grenze_tage: 14,\n  unterbrechung_zulaessig: unterbrechung === null ? null : (unterbrechung <= 14 || !!vo.unterbrechungsgrund),\n  summe_einheiten: hm.reduce((s, h) => s + (Number(h.einheiten) || 0), 0),\n  anzahl_vorrangige_heilmittel: hm.filter((h) => h.art === 'vorrangig').length,\n  lanr_format_ok: formatOk(vo.lanr),\n  bsnr_format_ok: formatOk(vo.bsnr),\n  pflichtangaben,\n  icd_passende_diagnosegruppe: region,\n  diagnosegruppe_passt_zu_icd: region && dg && ['WS', 'EX'].includes(dg) ? region === dg : null\n};\nreturn [{ json: { vo, fakten, diagnose_auswahl: $input.first().json.diagnose_auswahl || { hinweise: [] }, start_ms: Date.now() } }];"
+      }
+    },
+    {
+      "id": "54e44c8d-8b53-463b-a853-2b07aa28a09a",
+      "name": "Text redigieren",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        1456
+      ],
+      "parameters": {
+        "jsCode": "// Redigiert Freitext (Chat-Eingang), bevor ihn der Extraktor liest.\n// Best effort über Muster – für echte Patientendaten ist der Formularweg gedacht.\nconst saeubere = (text) => {\n  if (typeof text !== \"string\" || text.trim() === \"\") return { text, entfernt: [] };\n  const entfernt = [];\n  let s = text;\n  const ersetze = (muster, ersatz, label) => {\n    const vorher = s;\n    s = s.replace(muster, ersatz);\n    if (s !== vorher && !entfernt.includes(label)) entfernt.push(label);\n  };\n\n  // Geburtsdatum zuerst – sonst greift die Telefonnummern-Regel (03.04.1958 sieht wie eine Nummer aus)\n  ersetze(/\\b(?:geb(?:oren|\\.)?\\s*(?:am)?|Geb\\.?-?Datum|Geburtsdatum)\\s*:?\\s*\\d{1,2}\\.\\d{1,2}\\.\\d{4}/gi, \"[Geburtsdatum]\", \"Geburtsdatum\");\n\n  // Versichertennummer (KVNR: Buchstabe + 8-10 Ziffern) – ICD-Codes haben einen Punkt\n  ersetze(/\\b[A-Z]{1,2}\\d{8,10}\\b/g, \"[Versichertennummer]\", \"Versichertennummer\");\n  ersetze(/[\\w.+-]+@[\\w-]+\\.[\\w.]{2,}/g, \"[E-Mail]\", \"E-Mail\");\n  ersetze(/\\b(?:Tel\\.?|Telefon|Mobil|Handy|Fax)\\s*:?\\s*\\+?[\\d \\t/()-]{6,}\\d/gi, \"[Telefon]\", \"Telefonnummer\");\n  // Ziffernfolge wie eine Telefonnummer, aber Datumswerte (03.04.1958) ausnehmen\n  ersetze(/(?:\\+49|0049|0)[ \\t\\d/.-]{6,}\\d/g, (m) => (/^\\d{1,2}\\.\\d{1,2}\\.\\d{4}$/.test(m.trim()) ? m : \"[Telefon]\"), \"Telefonnummer\");\n  ersetze(/\\bDE\\d{2}(?:[ ]?\\d{4}){4}[ ]?\\d{2}\\b/g, \"[IBAN]\", \"IBAN\");\n  ersetze(/\\b[A-Z]{2}\\d{2}(?:[ ]?[A-Z0-9]{4}){2,7}[ ]?[A-Z0-9]{0,2}\\b/g, \"[IBAN]\", \"IBAN\");\n  ersetze(/\\bLANR\\s*:?\\s*\\d{6,10}\\b/gi, \"LANR [LANR]\", \"LANR\");\n  ersetze(/\\bBSNR\\s*:?\\s*\\d{6,10}\\b/gi, \"BSNR [BSNR]\", \"BSNR\");\n\n  // Rollenwort + Name (auch Beugungen: Herrn, Patienten, Angehörige …)\n  ersetze(/\\b(Patient(?:in|en)?|Versicherte(?:r|n)?|Herr(?:n)?|Frau(?:en)?|Kind(?:er)?|Sohn|Tochter|Ehefrau|Ehemann|Lebenspartner(?:in)?|Mutter|Vater|Angehörige(?:r|n)?)\\s+(?:Dr\\.\\s*)?(?:med\\.\\s*)?[A-ZÄÖÜ][a-zäöüß-]+(?:\\s+[A-ZÄÖÜ][a-zäöüß-]+)*/g, (m, rolle) => rolle + \" [Name]\", \"Name\");\n  // Ärztin/Arzt ohne Rollenwort\n  ersetze(/\\bDr\\.\\s*(?:med\\.\\s*)?(?:dent\\.\\s*)?[A-ZÄÖÜ][a-zäöüß-]+(?:\\s+[A-ZÄÖÜ][a-zäöüß-]+)*/g, \"[Arzt]\", \"Arzt\");\n  ersetze(/\\b(?:Nach)?[Nn]ame\\s*:\\s*[^\\n;,]+/g, \"[Name]\", \"Name\");\n\n\n  // Anschrift: Straße + Hausnummer, PLZ + Ort, Praxisname\n  ersetze(/\\b[A-ZÄÖÜ][a-zäöüß]+(?:straße|str\\.|weg|allee|platz|ring|gasse|damm|ufer)\\s*\\d+[a-z]?\\b/gi, \"[Anschrift]\", \"Anschrift\");\n  ersetze(/\\b\\d{5}\\s+[A-ZÄÖÜ][a-zäöüß]+(?:\\s+[A-ZÄÖÜ][a-zäöüß]+)?/g, \"[PLZ Ort]\", \"Anschrift\");\n  ersetze(/\\bPraxis\\s+(?:(?:am|an der|im|für)\\s+)?(?:Dr\\.\\s*(?:med\\.\\s*)?)?[A-ZÄÖÜ][a-zäöüß-]+(?:\\s+[A-ZÄÖÜ][a-zäöüß-]+){0,2}/g, \"[Praxis]\", \"Praxis\");\n\n  return { text: s, entfernt };\n};\nconst eingang = $input.first().json;\nconst { text, entfernt } = saeubere(eingang.text ?? \"\");\nreturn [{ json: { ...eingang, text, redaktion: { entfernt } } }];\n"
+      }
+    },
+    {
+      "id": "f29587fb-78ef-4797-a5de-7bba8b05b079",
+      "name": "Verordnung erfassen",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        1072
+      ],
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=Du erfasst ärztliche Heilmittelverordnungen (Physiotherapie) aus Freitext oder JSON, den die Rezeption einfügt. Übernimm nur, was im Text steht. Fehlende Angaben setzt du auf null – rate niemals. Datumsangaben im Format YYYY-MM-DD. Wenn kein Prüfdatum genannt ist, verwende das heutige Datum {{ $now.toISODate() }}. Heilmittel-Abkürzungen: KG = Krankengymnastik, MT = Manuelle Therapie, KMT = Klassische Massagetherapie, WT = Wärmetherapie (ergänzend). dringlich ist true nur, wenn 'dringlicher Behandlungsbedarf' angekreuzt bzw. genannt ist. Antworte immer mit dem JSON-Objekt – stelle keine Rückfragen, auch wenn Angaben fehlen. Fehlende Angaben sind null. Erfasse außerdem den Personalienblock (patient mit krankenkasse, nachname, vorname, geburtsdatum, kostentraegerkennung, versichertennummer, versichertenstatus), die Kennzeichen zuzahlung (frei oder pflicht), unfallfolgen und bvg_ser, den heilmittelbereich (physiotherapie, podologie, ssss, ergotherapie, ernaehrung), therapiebericht, hausbesuch, ein ergaenzendes_heilmittel, therapieziele_hinweise sowie arzt (name, fachrichtung, betriebsstaette). Alle im Text genannten ICD-10-GM-Codes kommen in der Reihenfolge ihrer Nennung nach diagnosen[]; anlass ist true nur für den Code, der Anlass der Verordnung ist (in der Regel der zuerst genannte Beschwerdegrund). Die beiden ICD-Zeilen des Vordrucks wählt ein Code-Node aus. Werte in eckigen Klammern (z. B. [Name], [Geburtsdatum], [LANR]) sind redigierte Angaben: Übernimm den Marker unverändert als Wert des passenden Feldes – er bedeutet, dass die Angabe vorhanden ist."
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "77dde160-2877-42f5-9e25-61d17fddf100",
+      "name": "OpenAI Modell",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        816,
+        400
+      ],
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "id",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "id": "45064db2-2e61-4645-9155-8519b99d3486",
+      "name": "Schema Verordnung",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        304,
+        1312
+      ],
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\"type\": \"object\", \"properties\": { \"verordnung_ref\": { \"type\": [ \"string\", \"null\" ] }, \"patient\": { \"type\": \"object\", \"properties\": { \"krankenkasse\": { \"type\": [ \"string\", \"null\" ] }, \"nachname\": { \"type\": [ \"string\", \"null\" ] }, \"vorname\": { \"type\": [ \"string\", \"null\" ] }, \"geburtsdatum\": { \"type\": [ \"string\", \"null\" ], \"description\": \"YYYY-MM-DD\" }, \"kostentraegerkennung\": { \"type\": [ \"string\", \"null\" ] }, \"versichertennummer\": { \"type\": [ \"string\", \"null\" ] }, \"versichertenstatus\": { \"type\": [ \"string\", \"null\" ] } }, \"required\": [ \"krankenkasse\", \"nachname\", \"vorname\", \"geburtsdatum\", \"kostentraegerkennung\", \"versichertennummer\", \"versichertenstatus\" ] }, \"bsnr\": { \"type\": [ \"string\", \"null\" ] }, \"lanr\": { \"type\": [ \"string\", \"null\" ] }, \"ausstellungsdatum\": { \"type\": [ \"string\", \"null\" ], \"description\": \"YYYY-MM-DD\" }, \"pruefdatum\": { \"type\": [ \"string\", \"null\" ], \"description\": \"YYYY-MM-DD\" }, \"geplanter_beginn\": { \"type\": [ \"string\", \"null\" ], \"description\": \"YYYY-MM-DD\" }, \"zuzahlung\": { \"type\": [ \"string\", \"null\" ], \"description\": \"frei | pflicht\" }, \"unfallfolgen\": { \"type\": [ \"boolean\", \"null\" ] }, \"bvg_ser\": { \"type\": [ \"boolean\", \"null\" ] }, \"heilmittelbereich\": { \"type\": [ \"string\", \"null\" ], \"description\": \"physiotherapie | podologie | ssss | ergotherapie | ernaehrung\" }, \"diagnosen\": { \"type\": \"array\", \"items\": { \"type\": \"object\", \"properties\": { \"code\": { \"type\": \"string\" }, \"bezeichnung\": { \"type\": [ \"string\", \"null\" ] }, \"anlass\": { \"type\": \"boolean\" } }, \"required\": [ \"code\", \"bezeichnung\", \"anlass\" ] } }, \"diagnosegruppe\": { \"type\": [ \"string\", \"null\" ] }, \"leitsymptomatik\": { \"type\": [ \"string\", \"null\" ], \"description\": \"a | b | c | x (patientenindividuell)\" }, \"leitsymptomatik_freitext\": { \"type\": [ \"string\", \"null\" ] }, \"heilmittel\": { \"type\": \"array\", \"items\": { \"type\": \"object\", \"properties\": { \"name\": { \"type\": \"string\" }, \"einheiten\": { \"type\": [ \"number\", \"null\" ] }, \"art\": { \"type\": \"string\", \"enum\": [ \"vorrangig\", \"ergaenzend\", \"unbekannt\" ] } }, \"required\": [ \"name\", \"einheiten\", \"art\" ] } }, \"ergaenzendes_heilmittel\": { \"type\": \"object\", \"properties\": { \"name\": { \"type\": [ \"string\", \"null\" ] }, \"einheiten\": { \"type\": [ \"number\", \"null\" ] } }, \"required\": [ \"name\", \"einheiten\" ] }, \"frequenz\": { \"type\": [ \"string\", \"null\" ] }, \"therapiebericht\": { \"type\": [ \"boolean\", \"null\" ] }, \"hausbesuch\": { \"type\": [ \"boolean\", \"null\" ] }, \"dringlich\": { \"type\": \"boolean\" }, \"therapieziele_hinweise\": { \"type\": [ \"string\", \"null\" ] }, \"arzt\": { \"type\": \"object\", \"properties\": { \"name\": { \"type\": [ \"string\", \"null\" ] }, \"fachrichtung\": { \"type\": [ \"string\", \"null\" ] }, \"betriebsstaette\": { \"type\": [ \"string\", \"null\" ] } }, \"required\": [ \"name\", \"fachrichtung\", \"betriebsstaette\" ] }, \"unterschrift\": { \"type\": [ \"boolean\", \"null\" ] }, \"letzte_behandlung\": { \"type\": [ \"string\", \"null\" ], \"description\": \"YYYY-MM-DD\" }, \"unterbrechungsgrund\": { \"type\": [ \"string\", \"null\" ] }, \"kostentraeger\": { \"type\": [ \"string\", \"null\" ] } }, \"required\": [ \"verordnung_ref\", \"patient\", \"bsnr\", \"lanr\", \"ausstellungsdatum\", \"pruefdatum\", \"geplanter_beginn\", \"zuzahlung\", \"unfallfolgen\", \"bvg_ser\", \"heilmittelbereich\", \"diagnosen\", \"diagnosegruppe\", \"leitsymptomatik\", \"leitsymptomatik_freitext\", \"heilmittel\", \"ergaenzendes_heilmittel\", \"frequenz\", \"therapiebericht\", \"hausbesuch\", \"dringlich\", \"therapieziele_hinweise\", \"arzt\", \"unterschrift\", \"letzte_behandlung\", \"unterbrechungsgrund\", \"kostentraeger\" ]}"
+      }
+    },
+    {
+      "id": "ee7bd510-6fd2-467d-867b-c517291b7f2f",
+      "name": "Diagnosen auswählen",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        1072
+      ],
+      "parameters": {
+        "jsCode": "// Wählt die zwei ICD-10-GM-Zeilen des Vordrucks Muster 13 aus der Liste der erkannten\n// Diagnosen. Regel: docs/vordruck-muster13.md, Abschnitt 5. Deterministisch – die\n// Diagnosegruppe des Heilmittels entscheidet, welcher Code verordnungsrelevant ist.\nconst vo = $input.first().json.output;\n\n// ICD-10-Bereich -> Körperregion (dieselbe Zuordnung wie im Code-Node \"Fristen berechnen\")\nconst icdRegion = (code) => {\n  if (!code) return null;\n  const m = String(code).toUpperCase().match(/^([A-Z])(\\d{2})/);\n  if (!m) return null;\n  const k = m[1], n = Number(m[2]);\n  if (k === 'M' && n >= 40 && n <= 54) return 'WS';\n  if (k === 'S' && [12, 13, 22, 23, 32, 33].includes(n)) return 'WS';\n  if (k === 'M' && n >= 15 && n <= 25) return 'EX';\n  if (k === 'M' && [75, 76, 77].includes(n)) return 'EX';\n  if (k === 'S' && n >= 40 && n <= 99) return 'EX';\n  return null;\n};\n\n// 1. Sammeln: alle genannten Codes, ohne Doppelte, in der Reihenfolge der Nennung.\nconst erkannt = [];\nconst roh = Array.isArray(vo.diagnosen) && vo.diagnosen.length\n  ? vo.diagnosen\n  : (vo.icd10 ? [{ code: vo.icd10, bezeichnung: vo.icd10_bezeichnung || null, anlass: true }] : []);\nfor (const d of roh) {\n  const code = d && d.code ? String(d.code).toUpperCase().trim() : null;\n  if (code && !erkannt.some((e) => e.code === code)) {\n    erkannt.push({ code, bezeichnung: d.bezeichnung || null, anlass: !!d.anlass });\n  }\n}\n\n// 2. Verordnungsbezug: Ein Code ist relevant, wenn er zur Diagnosegruppe passt.\nconst dg = vo.diagnosegruppe ? String(vo.diagnosegruppe).toUpperCase().trim() : null;\nconst passt = (d) => !!dg && icdRegion(d.code) === dg;\nconst nachAnlass = (a, b) => Number(b.anlass) - Number(a.anlass);\nconst relevant = erkannt.filter(passt).sort(nachAnlass);\n\n// 3. Zeile 1 = führende Diagnose (Anlass, sonst erster relevanter Code), Zeile 2 = nächster relevanter Code.\nconst fuehrend = relevant[0] || [...erkannt].sort(nachAnlass)[0] || null;\nconst zweite = fuehrend ? relevant.filter((d) => d.code !== fuehrend.code)[0] || null : null;\n\nconst hinweise = [];\nif (!fuehrend) {\n  hinweise.push('Kein ICD-10-GM-Code erkannt – Zeile 1 bleibt leer.');\n} else if (!relevant.length) {\n  hinweise.push('Kein erkannter Code passt zur Diagnosegruppe ' + (dg || '(keine)') + '; Zeile 1 ist ein Vorschlag und fachlich zu prüfen.');\n}\nif (relevant.length > 2) {\n  hinweise.push(relevant.length + ' Codes passen zur Diagnosegruppe ' + dg + ' – Zeile 2 folgt der Nennungsreihenfolge, die übrigen fachlich prüfen.');\n}\n\n// 4. Alles Übrige nachvollziehbar begründen – es wird nichts stillschweigend verworfen.\nvo.icd10 = fuehrend ? fuehrend.code : null;\nvo.icd10_bezeichnung = fuehrend ? fuehrend.bezeichnung : null;\nvo.weitere_diagnosen = zweite ? [{ code: zweite.code, bezeichnung: zweite.bezeichnung }] : [];\nvo.nicht_verordnungsrelevant = erkannt.filter((d) => !fuehrend || d.code !== fuehrend.code).filter((d) => !zweite || d.code !== zweite.code).map((d) => {\n  const region = icdRegion(d.code);\n  return {\n    code: d.code,\n    bezeichnung: d.bezeichnung,\n    grund: region === null\n      ? 'Körperregion nicht zuordenbar – nur bei besonderem Verordnungsbedarf über die Diagnoseliste relevant'\n      : 'andere Körperregion (' + region + ') als die Diagnosegruppe ' + dg\n  };\n});\n\nreturn [{ json: {\n  output: vo,\n  diagnose_auswahl: {\n    fuehrend: fuehrend ? { code: fuehrend.code, bezeichnung: fuehrend.bezeichnung, anlass: fuehrend.anlass } : null,\n    zweite: zweite ? { code: zweite.code, bezeichnung: zweite.bezeichnung, anlass: zweite.anlass } : null,\n    erkannt: erkannt.length,\n    hinweise\n  }\n} }];\n"
+      }
+    },
+    {
+      "id": "1b860cd4-19ec-4aca-b094-bbb3d5759452",
+      "name": "Hinweis Freitext",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        1600
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "hinweis-text",
+              "name": "output",
+              "value": "Der Freitext konnte nicht in die Verordnung übernommen werden. Bitte die Angaben im Formular (Muster 13) erfassen – dort greift auch die vollständige PII-Redaktion.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "c5e31323-7a84-4441-abbf-671fe64e3ead",
+      "name": "PII entfernen",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        752,
+        1072
+      ],
+      "parameters": {
+        "jsCode": "// PII-Redaktion: Die Prüf-Agenten erhalten nur die fachlich nötigen Angaben.\n// Direkte Identifikatoren werden durch Marker ersetzt (das Feld bleibt als \"ausgefüllt\"\n// erkennbar), freie Texte entfernt oder bereinigt. Das Original bleibt im Prüfprotokoll.\nconst saeubere = (text) => {\n  if (typeof text !== \"string\" || text.trim() === \"\") return { text, entfernt: [] };\n  const entfernt = [];\n  let s = text;\n  const ersetze = (muster, ersatz, label) => {\n    const vorher = s;\n    s = s.replace(muster, ersatz);\n    if (s !== vorher && !entfernt.includes(label)) entfernt.push(label);\n  };\n\n  // Geburtsdatum zuerst – sonst greift die Telefonnummern-Regel (03.04.1958 sieht wie eine Nummer aus)\n  ersetze(/\\b(?:geb(?:oren|\\.)?\\s*(?:am)?|Geb\\.?-?Datum|Geburtsdatum)\\s*:?\\s*\\d{1,2}\\.\\d{1,2}\\.\\d{4}/gi, \"[Geburtsdatum]\", \"Geburtsdatum\");\n\n  // Versichertennummer (KVNR: Buchstabe + 8-10 Ziffern) – ICD-Codes haben einen Punkt\n  ersetze(/\\b[A-Z]{1,2}\\d{8,10}\\b/g, \"[Versichertennummer]\", \"Versichertennummer\");\n  ersetze(/[\\w.+-]+@[\\w-]+\\.[\\w.]{2,}/g, \"[E-Mail]\", \"E-Mail\");\n  ersetze(/\\b(?:Tel\\.?|Telefon|Mobil|Handy|Fax)\\s*:?\\s*\\+?[\\d \\t/()-]{6,}\\d/gi, \"[Telefon]\", \"Telefonnummer\");\n  // Ziffernfolge wie eine Telefonnummer, aber Datumswerte (03.04.1958) ausnehmen\n  ersetze(/(?:\\+49|0049|0)[ \\t\\d/.-]{6,}\\d/g, (m) => (/^\\d{1,2}\\.\\d{1,2}\\.\\d{4}$/.test(m.trim()) ? m : \"[Telefon]\"), \"Telefonnummer\");\n  ersetze(/\\bDE\\d{2}(?:[ ]?\\d{4}){4}[ ]?\\d{2}\\b/g, \"[IBAN]\", \"IBAN\");\n  ersetze(/\\b[A-Z]{2}\\d{2}(?:[ ]?[A-Z0-9]{4}){2,7}[ ]?[A-Z0-9]{0,2}\\b/g, \"[IBAN]\", \"IBAN\");\n  ersetze(/\\bLANR\\s*:?\\s*\\d{6,10}\\b/gi, \"LANR [LANR]\", \"LANR\");\n  ersetze(/\\bBSNR\\s*:?\\s*\\d{6,10}\\b/gi, \"BSNR [BSNR]\", \"BSNR\");\n\n  // Rollenwort + Name (auch Beugungen: Herrn, Patienten, Angehörige …)\n  ersetze(/\\b(Patient(?:in|en)?|Versicherte(?:r|n)?|Herr(?:n)?|Frau(?:en)?|Kind(?:er)?|Sohn|Tochter|Ehefrau|Ehemann|Lebenspartner(?:in)?|Mutter|Vater|Angehörige(?:r|n)?)\\s+(?:Dr\\.\\s*)?(?:med\\.\\s*)?[A-ZÄÖÜ][a-zäöüß-]+(?:\\s+[A-ZÄÖÜ][a-zäöüß-]+)*/g, (m, rolle) => rolle + \" [Name]\", \"Name\");\n  // Ärztin/Arzt ohne Rollenwort\n  ersetze(/\\bDr\\.\\s*(?:med\\.\\s*)?(?:dent\\.\\s*)?[A-ZÄÖÜ][a-zäöüß-]+(?:\\s+[A-ZÄÖÜ][a-zäöüß-]+)*/g, \"[Arzt]\", \"Arzt\");\n  ersetze(/\\b(?:Nach)?[Nn]ame\\s*:\\s*[^\\n;,]+/g, \"[Name]\", \"Name\");\n\n\n  // Anschrift: Straße + Hausnummer, PLZ + Ort, Praxisname\n  ersetze(/\\b[A-ZÄÖÜ][a-zäöüß]+(?:straße|str\\.|weg|allee|platz|ring|gasse|damm|ufer)\\s*\\d+[a-z]?\\b/gi, \"[Anschrift]\", \"Anschrift\");\n  ersetze(/\\b\\d{5}\\s+[A-ZÄÖÜ][a-zäöüß]+(?:\\s+[A-ZÄÖÜ][a-zäöüß]+)?/g, \"[PLZ Ort]\", \"Anschrift\");\n  ersetze(/\\bPraxis\\s+(?:(?:am|an der|im|für)\\s+)?(?:Dr\\.\\s*(?:med\\.\\s*)?)?[A-ZÄÖÜ][a-zäöüß-]+(?:\\s+[A-ZÄÖÜ][a-zäöüß-]+){0,2}/g, \"[Praxis]\", \"Praxis\");\n\n  return { text: s, entfernt };\n};\nconst basis = $input.first().json;\nconst vo = basis.vo ?? {};\nconst entfernt = [];\n\nconst marke = (wert, label) => {\n  if (wert === null || wert === undefined || String(wert).trim() === \"\") return null;\n  if (!entfernt.includes(label)) entfernt.push(label);\n  return \"[\" + label + \"]\";\n};\nconst freitext = (wert, label) => {\n  if (!wert) return null;\n  if (!entfernt.includes(label)) entfernt.push(label);\n  return \"[Freitext entfernt]\";\n};\nconst bereinigt = (wert) => {\n  const { text, entfernt: gefunden } = saeubere(wert ?? \"\");\n  for (const g of gefunden) if (!entfernt.includes(g)) entfernt.push(g);\n  return text === \"\" ? null : text;\n};\n\nconst redigiert = {\n  ...vo,\n  patient: {\n    krankenkasse: vo.patient?.krankenkasse ?? null,\n    nachname: marke(vo.patient?.nachname, \"Name\"),\n    vorname: marke(vo.patient?.vorname, \"Vorname\"),\n    geburtsdatum: marke(vo.patient?.geburtsdatum, \"Geburtsdatum\"),\n    kostentraegerkennung: marke(vo.patient?.kostentraegerkennung, \"Kostenträgerkennung\"),\n    versichertennummer: marke(vo.patient?.versichertennummer, \"Versichertennummer\"),\n    versichertenstatus: vo.patient?.versichertenstatus ?? null\n  },\n  lanr: marke(vo.lanr, \"LANR\"),\n  bsnr: marke(vo.bsnr, \"BSNR\"),\n  arzt: {\n    name: marke(vo.arzt?.name, \"Arzt\"),\n    fachrichtung: vo.arzt?.fachrichtung ?? null,\n    betriebsstaette: marke(vo.arzt?.betriebsstaette, \"Praxis\")\n  },\n  icd10_bezeichnung: bereinigt(vo.icd10_bezeichnung),\n  weitere_diagnosen: (vo.weitere_diagnosen ?? []).map((d) => ({ ...d, bezeichnung: bereinigt(d.bezeichnung) })),\n  diagnosen: (vo.diagnosen ?? []).map((d) => ({ ...d, bezeichnung: bereinigt(d.bezeichnung) })),\n  nicht_verordnungsrelevant: (vo.nicht_verordnungsrelevant ?? []).map((d) => ({ ...d, bezeichnung: bereinigt(d.bezeichnung) })),\n  leitsymptomatik_freitext: freitext(vo.leitsymptomatik_freitext, \"Leitsymptomatik-Freitext\"),\n  therapieziele_hinweise: freitext(vo.therapieziele_hinweise, \"Therapieziele\"),\n  unterbrechungsgrund: bereinigt(vo.unterbrechungsgrund),\n  pseudonymisiert: true\n};\n\n// Wichtig: `vo` wird ersetzt, nicht ergänzt – sonst ginge das Original mit an das Modell.\nreturn [{ json: { ...basis, vo: redigiert, pii: { pseudonymisiert: true, entfernt } } }];\n"
+      }
+    },
+    {
+      "id": "ad22535e-5117-491e-93a4-6bef0cac7ab6",
+      "name": "Formal-Prüfer",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        944,
+        160
+      ],
+      "parameters": {
+        "promptType": "define",
+        "text": "=Verordnung:\n{{ JSON.stringify($json.vo) }}\n\nBerechnete Fakten (vom Code, verbindlich):\n{{ JSON.stringify($json.fakten) }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Du bist der Formal-Prüfer für ärztliche Heilmittelverordnungen (Physiotherapie, gesetzlich Versicherte).\nMandat: Vollständigkeit und Form der Pflichtangaben. Gib für JEDES dieser Felder genau einen Befund aus: Kostenträger, LANR (lebenslange Arztnummer, 9-stellig), BSNR (Betriebsstättennummer, 9-stellig), Ausstellungsdatum, Unterschrift, ICD-10-Code, Diagnosegruppe, Leitsymptomatik, Heilmittel mit Einheitenzahl, Therapiefrequenz.\nOb ein Feld ausgefüllt ist, steht verbindlich in 'pflichtangaben' (true = ausgefüllt). Das Format von LANR und BSNR prüft der Code: lanr_format_ok / bsnr_format_ok in den berechneten Fakten. Nur wenn dort false steht, ist das Feld 'fehlerhaft'; null bedeutet, dass das Format nicht prüfbar ist (redigiert) – dann kein Befund zum Format. Prüfziffern rechnest du NICHT nach. Die Leitsymptomatik wird auf dem Formular als Buchstabe (a, b, c) angekreuzt oder als patientenindividuelle Leitsymptomatik im Freitext angegeben – beides ist vollständig. Die inhaltliche Passung von ICD-Code und Diagnosegruppe prüfst du NICHT.\n\nRegeln für alle Prüfer:\n- Du prüfst NUR dein Mandat. Andere Aspekte gehören anderen Prüfern.\n- Erfinde keine Paragraphen oder Zahlen. Belege Regeln mit deinem Regelwerk-Werkzeug (Vektorsuche). Findest du keine Fundstelle, schreibe 'Fundstelle nicht gefunden – manuell prüfen' und setze den Status höchstens auf 'hinweis'.\n- status: 'ok' = in Ordnung, 'fehlt' = Pflichtangabe leer, 'fehlerhaft' = Regelverstoß, der zur Absetzung führen kann, 'hinweis' = die Rezeption muss konkret etwas beachten oder tun.\n- 'fehlt' NUR, wenn 'pflichtangaben' in den berechneten Fakten für das Feld false oder das Feld null ist.\n  Ein vorhandener Wert ist nie 'fehlt'; Werte in eckigen Klammern ([LANR], [Name] …) sind redigiert und damit vorhanden.\n- Werte unter 'Berechnete Fakten' sind verbindlich und haben Vorrang vor deiner eigenen Einschätzung.\n- korrekturhinweis: ein kurzer Satz in einfacher Sprache für die Rezeption (bei 'ok' leer lassen).\n- Setze das Feld agent auf 'formal'. Antworte ausschließlich im vorgegebenen JSON-Format. Wichtig zum Ablauf: Rufe dein Regelwerk-Werkzeug höchstens einmal je Befund-Feld auf. Deine letzte Nachricht ist ausschließlich das JSON-Objekt – kein weiterer Werkzeugaufruf, kein Fließtext davor oder danach. Fehlt ein Wert in der Verordnung, bleibt das Feld im JSON null und der Befund steht auf 'fehlt'. Die Verordnung ist pseudonymisiert: Werte in eckigen Klammern (z. B. [Name], [LANR]) bedeuten, dass das Feld ausgefüllt ist, der Wert aber aus Datenschutzgründen entfernt wurde. Behandle solche Felder als vorhanden. Frage niemals nach personenbezogenen Angaben.",
+          "maxIterations": 6,
+          "enableStreaming": false
+        }
+      }
+    },
+    {
+      "id": "e5d595f7-be83-4050-87c7-cbf68bad5ca4",
+      "name": "Regelwerk Formal-Prüfer",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        944,
+        400
+      ],
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Durchsucht die Heilmittel-Richtlinie des G-BA nach Regeln zu Pflichtangaben und Form der Verordnung.",
+        "tableName": {
+          "__rl": true,
+          "mode": "id",
+          "value": "documents"
+        },
+        "topK": 5,
+        "options": {
+          "queryName": "match_documents",
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "quelle",
+                "value": "HeilM-RL"
+              }
+            ]
+          }
+        }
+      },
+      "credentials": {
+        "supabaseApi": {
+          "name": "Supabase Verordnungs_check"
+        }
+      }
+    },
+    {
+      "id": "875d5a8b-60dd-4aae-8f26-2e0be29732d2",
+      "name": "OpenAI Embeddings (Suche)",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1024,
+        608
+      ],
+      "parameters": {
+        "options": {}
+      },
+      "credentials": {
+        "openAiApi": {
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "id": "db1cf751-9825-40a2-a749-11fe0c69d167",
+      "name": "Schema Befunde Formal-Prüfer",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1232,
+        400
+      ],
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\"type\": \"object\", \"properties\": {\"agent\": {\"type\": \"string\", \"enum\": [\"formal\", \"diagnose\", \"menge\", \"frist\"]}, \"befunde\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"properties\": {\"feld\": {\"type\": \"string\"}, \"status\": {\"type\": \"string\", \"enum\": [\"ok\", \"fehlt\", \"fehlerhaft\", \"hinweis\"]}, \"fundstelle\": {\"type\": \"string\"}, \"korrekturhinweis\": {\"type\": \"string\"}}, \"required\": [\"feld\", \"status\", \"fundstelle\", \"korrekturhinweis\"]}}}, \"required\": [\"agent\", \"befunde\"]}"
+      }
+    },
+    {
+      "id": "35977d67-fb1d-40e0-89fa-2ec4a0e4d22c",
+      "name": "Befunde sammeln",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1424,
+        1040
+      ],
+      "parameters": {
+        "numberInputs": 4
+      }
+    },
+    {
+      "id": "ae5fe772-066d-444d-b5e4-2305fcea5880",
+      "name": "Diagnose-Prüfer",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        976,
+        768
+      ],
+      "parameters": {
+        "promptType": "define",
+        "text": "=Verordnung:\n{{ JSON.stringify($json.vo) }}\n\nBerechnete Fakten (vom Code, verbindlich):\n{{ JSON.stringify($json.fakten) }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Du bist der Diagnose-Prüfer für ärztliche Heilmittelverordnungen (Physiotherapie).\nMandat: (1) Passt der ICD-10-Code inhaltlich zur angegebenen Diagnosegruppe laut Heilmittelkatalog? Beispiel: Die Diagnosegruppe WS betrifft Wirbelsäulenerkrankungen, EX Erkrankungen der Extremitäten und des Beckens. Entscheidend ist die Körperregion des Codes: WS = Hals-, Brust- und Lendenwirbelsäule; EX = Schulter, Arm, Hand, Becken, Hüfte, Knie, Unterschenkel und Fuß. Beispiele: M54.2 (Halswirbelsäule) passt zu WS; M16.1 (Hüfte) und M77.1 (Ellenbogen) passen zu EX, aber nicht zu WS. 'fehlerhaft' NUR, wenn die Region des Codes nicht zur angegebenen Gruppe passt; nenne dann im korrekturhinweis die passende Gruppe. VERBINDLICH: Steht in den berechneten Fakten diagnosegruppe_passt_zu_icd=true, ist 'Diagnosegruppe' 'ok'; bei false ist es 'fehlerhaft' (passende Gruppe: icd_passende_diagnosegruppe). Nur bei null beurteilst du selbst mit dem Werkzeug; im Zweifel 'hinweis'. Selbstprüfung: Wenn deine eigene Begründung sagt, dass der Code zur angegebenen Gruppe gehört, ist der Status 'ok'. (2) Ist die Leitsymptomatik für die Diagnosegruppe zulässig? Der Heilmittelkatalog nennt je Diagnosegruppe die Leitsymptomatiken a, b und c; ein Buchstabe a, b oder c oder eine patientenindividuelle Leitsymptomatik ist 'ok'. Ist das Feld leer, ist das Sache des Formal-Prüfers: dann 'hinweis' mit Verweis auf den Formal-Prüfer. (3) Steht der ICD-Code auf der KBV-Diagnoseliste (besonderer Verordnungsbedarf / langfristiger Heilmittelbedarf)? Nur wenn du den Code ausdrücklich auf der Liste findest: 'hinweis' (Nutzen für die Praxis). Findest du ihn nicht: 'ok'. Dieses Feld ist nie 'fehlt' oder 'fehlerhaft'.\nGib Befunde für die Felder 'Diagnosegruppe', 'Leitsymptomatik' und 'Besonderer Verordnungsbedarf' aus. Recherchiere IMMER zuerst mit dem Werkzeug.\n\nRegeln für alle Prüfer:\n- Du prüfst NUR dein Mandat. Andere Aspekte gehören anderen Prüfern.\n- Erfinde keine Paragraphen oder Zahlen. Belege Regeln mit deinem Regelwerk-Werkzeug (Vektorsuche). Findest du keine Fundstelle, schreibe 'Fundstelle nicht gefunden – manuell prüfen' und setze den Status höchstens auf 'hinweis'.\n- status: 'ok' = in Ordnung, 'fehlt' = Pflichtangabe leer, 'fehlerhaft' = Regelverstoß, der zur Absetzung führen kann, 'hinweis' = die Rezeption muss konkret etwas beachten oder tun.\n- 'fehlt' NUR, wenn 'pflichtangaben' in den berechneten Fakten für das Feld false oder das Feld null ist.\n  Ein vorhandener Wert ist nie 'fehlt'; Werte in eckigen Klammern ([LANR], [Name] …) sind redigiert und damit vorhanden.\n- Werte unter 'Berechnete Fakten' sind verbindlich und haben Vorrang vor deiner eigenen Einschätzung.\n- korrekturhinweis: ein kurzer Satz in einfacher Sprache für die Rezeption (bei 'ok' leer lassen).\n- Setze das Feld agent auf 'diagnose'. Antworte ausschließlich im vorgegebenen JSON-Format. Wichtig zum Ablauf: Rufe dein Regelwerk-Werkzeug höchstens einmal je Befund-Feld auf. Deine letzte Nachricht ist ausschließlich das JSON-Objekt – kein weiterer Werkzeugaufruf, kein Fließtext davor oder danach. Fehlt ein Wert in der Verordnung, bleibt das Feld im JSON null und der Befund steht auf 'fehlt'. Die Verordnung ist pseudonymisiert: Werte in eckigen Klammern (z. B. [Name], [LANR]) bedeuten, dass das Feld ausgefüllt ist, der Wert aber aus Datenschutzgründen entfernt wurde. Behandle solche Felder als vorhanden. Frage niemals nach personenbezogenen Angaben.",
+          "maxIterations": 6,
+          "enableStreaming": false
+        }
+      }
+    },
+    {
+      "id": "9f7c5763-4e8d-4268-8bcf-a524ab2f2587",
+      "name": "Regelwerk Diagnose-Prüfer",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        880,
+        1008
+      ],
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Durchsucht Heilmittelkatalog und KBV-Diagnoseliste: welche Diagnosegruppen, Leitsymptomatiken und ICD-10-Codes zusammengehören und welche Diagnosen einen besonderen Verordnungsbedarf oder langfristigen Heilmittelbedarf begründen.",
+        "tableName": {
+          "__rl": true,
+          "mode": "id",
+          "value": "documents"
+        },
+        "topK": 5,
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "credentials": {
+        "supabaseApi": {
+          "name": "Supabase Verordnungs_check"
+        }
+      }
+    },
+    {
+      "id": "79c235b8-8f3c-436d-ad3b-b8876d1b4ec1",
+      "name": "Schema Befunde Diagnose-Prüfer",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1168,
+        1008
+      ],
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\"type\": \"object\", \"properties\": {\"agent\": {\"type\": \"string\", \"enum\": [\"formal\", \"diagnose\", \"menge\", \"frist\"]}, \"befunde\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"properties\": {\"feld\": {\"type\": \"string\"}, \"status\": {\"type\": \"string\", \"enum\": [\"ok\", \"fehlt\", \"fehlerhaft\", \"hinweis\"]}, \"fundstelle\": {\"type\": \"string\"}, \"korrekturhinweis\": {\"type\": \"string\"}}, \"required\": [\"feld\", \"status\", \"fundstelle\", \"korrekturhinweis\"]}}}, \"required\": [\"agent\", \"befunde\"]}"
+      }
+    },
+    {
+      "id": "41dca620-5579-4c1a-8c57-4f1472a09a70",
+      "name": "Mengen-Prüfer",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        976,
+        1168
+      ],
+      "parameters": {
+        "promptType": "define",
+        "text": "=Verordnung:\n{{ JSON.stringify($json.vo) }}\n\nBerechnete Fakten (vom Code, verbindlich):\n{{ JSON.stringify($json.fakten) }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Du bist der Mengen-Prüfer für ärztliche Heilmittelverordnungen (Physiotherapie).\nMandat: (1) Überschreitet die Einheitenzahl je Verordnung die Höchstmenge laut Heilmittelkatalog für die Diagnosegruppe? Für die Diagnosegruppen WS und EX gilt in der Physiotherapie in der Regel eine Höchstmenge von bis zu 6 Einheiten je Verordnung – belege das mit dem Werkzeug. Ausnahme: besonderer Verordnungsbedarf oder langfristiger Heilmittelbedarf (Menge für bis zu 12 Wochen). (2) Höchstens drei vorrangige Heilmittel; ergänzende Heilmittel nicht mehr Einheiten als vorrangige. (3) Liegt die Therapiefrequenz im empfohlenen Rahmen des Katalogs (Frequenzempfehlung bei der Diagnosegruppe, z. B. '1-3x wöchentlich')? Innerhalb des Rahmens: 'ok'. Nur eine belegte Abweichung ist ein 'hinweis'.\nGib Befunde für die Felder 'Einheiten je Verordnung', 'Heilmittel-Kombination' und 'Therapiefrequenz' aus. Recherchiere IMMER zuerst mit dem Werkzeug.\n\nRegeln für alle Prüfer:\n- Du prüfst NUR dein Mandat. Andere Aspekte gehören anderen Prüfern.\n- Erfinde keine Paragraphen oder Zahlen. Belege Regeln mit deinem Regelwerk-Werkzeug (Vektorsuche). Findest du keine Fundstelle, schreibe 'Fundstelle nicht gefunden – manuell prüfen' und setze den Status höchstens auf 'hinweis'.\n- status: 'ok' = in Ordnung, 'fehlt' = Pflichtangabe leer, 'fehlerhaft' = Regelverstoß, der zur Absetzung führen kann, 'hinweis' = die Rezeption muss konkret etwas beachten oder tun.\n- 'fehlt' NUR, wenn 'pflichtangaben' in den berechneten Fakten für das Feld false oder das Feld null ist.\n  Ein vorhandener Wert ist nie 'fehlt'; Werte in eckigen Klammern ([LANR], [Name] …) sind redigiert und damit vorhanden.\n- Werte unter 'Berechnete Fakten' sind verbindlich und haben Vorrang vor deiner eigenen Einschätzung.\n- korrekturhinweis: ein kurzer Satz in einfacher Sprache für die Rezeption (bei 'ok' leer lassen).\n- Setze das Feld agent auf 'menge'. Antworte ausschließlich im vorgegebenen JSON-Format. Wichtig zum Ablauf: Rufe dein Regelwerk-Werkzeug höchstens einmal je Befund-Feld auf. Deine letzte Nachricht ist ausschließlich das JSON-Objekt – kein weiterer Werkzeugaufruf, kein Fließtext davor oder danach. Fehlt ein Wert in der Verordnung, bleibt das Feld im JSON null und der Befund steht auf 'fehlt'. Die Verordnung ist pseudonymisiert: Werte in eckigen Klammern (z. B. [Name], [LANR]) bedeuten, dass das Feld ausgefüllt ist, der Wert aber aus Datenschutzgründen entfernt wurde. Behandle solche Felder als vorhanden. Frage niemals nach personenbezogenen Angaben.",
+          "maxIterations": 6,
+          "enableStreaming": false
+        }
+      }
+    },
+    {
+      "id": "4d261860-105d-4197-9b0c-e2ca978afedb",
+      "name": "Regelwerk Mengen-Prüfer",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        880,
+        1408
+      ],
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Durchsucht Heilmittelkatalog, Heilmittel-Richtlinie und KBV-Diagnoseliste nach Höchstmengen je Verordnung, orientierenden Behandlungsmengen, Frequenzempfehlungen und Regeln zu vorrangigen und ergänzenden Heilmitteln.",
+        "tableName": {
+          "__rl": true,
+          "mode": "id",
+          "value": "documents"
+        },
+        "topK": 5,
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "credentials": {
+        "supabaseApi": {
+          "name": "Supabase Verordnungs_check"
+        }
+      }
+    },
+    {
+      "id": "f7ba4bd5-48b2-42a7-adb4-aa103816f3ca",
+      "name": "Schema Befunde Mengen-Prüfer",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1168,
+        1408
+      ],
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\"type\": \"object\", \"properties\": {\"agent\": {\"type\": \"string\", \"enum\": [\"formal\", \"diagnose\", \"menge\", \"frist\"]}, \"befunde\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"properties\": {\"feld\": {\"type\": \"string\"}, \"status\": {\"type\": \"string\", \"enum\": [\"ok\", \"fehlt\", \"fehlerhaft\", \"hinweis\"]}, \"fundstelle\": {\"type\": \"string\"}, \"korrekturhinweis\": {\"type\": \"string\"}}, \"required\": [\"feld\", \"status\", \"fundstelle\", \"korrekturhinweis\"]}}}, \"required\": [\"agent\", \"befunde\"]}"
+      }
+    },
+    {
+      "id": "c61af023-6698-4986-a212-f48558c09af3",
+      "name": "Fristen-Prüfer",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        976,
+        1680
+      ],
+      "parameters": {
+        "promptType": "define",
+        "text": "=Verordnung:\n{{ JSON.stringify($json.vo) }}\n\nBerechnete Fakten (vom Code, verbindlich):\n{{ JSON.stringify($json.fakten) }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Du bist der Fristen-Prüfer für ärztliche Heilmittelverordnungen.\nMandat: Behandlungsbeginn und Unterbrechungen. WICHTIG: Rechne selbst KEINE Tage aus. Verwende ausschließlich die Werte aus 'Berechnete Fakten' (vom Code berechnet). beginn_fristgerecht=false ist 'fehlerhaft' (Verordnung verliert ihre Gültigkeit). unterbrechung_zulaessig=false ist 'fehlerhaft'. Ein Wert null bedeutet 'nicht anwendbar' und ergibt 'ok' mit kurzer Begründung im Feld fundstelle. Ist bereits_begonnen=true, wurde der Behandlungsbeginn schon früher geprüft: Behandlungsbeginn ist dann 'ok'.\nGib Befunde für die Felder 'Behandlungsbeginn' und 'Unterbrechung' aus. Als Fundstelle trägst du 'HeilM-RL § 15' ein (Behandlungsbeginn) bzw. 'HeilM-RL § 15 und § 16' (Unterbrechung) – du brauchst dafür keine Suche.\n\nRegeln für alle Prüfer:\n- Du prüfst NUR dein Mandat. Andere Aspekte gehören anderen Prüfern.\n- Erfinde keine Paragraphen oder Zahlen. Belege Regeln mit deinem Regelwerk-Werkzeug (Vektorsuche). Findest du keine Fundstelle, schreibe 'Fundstelle nicht gefunden – manuell prüfen' und setze den Status höchstens auf 'hinweis'.\n- status: 'ok' = in Ordnung, 'fehlt' = Pflichtangabe leer, 'fehlerhaft' = Regelverstoß, der zur Absetzung führen kann, 'hinweis' = die Rezeption muss konkret etwas beachten oder tun.\n- 'fehlt' NUR, wenn 'pflichtangaben' in den berechneten Fakten für das Feld false oder das Feld null ist.\n  Ein vorhandener Wert ist nie 'fehlt'; Werte in eckigen Klammern ([LANR], [Name] …) sind redigiert und damit vorhanden.\n- Werte unter 'Berechnete Fakten' sind verbindlich und haben Vorrang vor deiner eigenen Einschätzung.\n- korrekturhinweis: ein kurzer Satz in einfacher Sprache für die Rezeption (bei 'ok' leer lassen).\n- Setze das Feld agent auf 'frist'. Antworte ausschließlich im vorgegebenen JSON-Format. Deine Antwort ist ausschließlich das JSON-Objekt – kein Fließtext davor oder danach. Fehlt ein Wert in der Verordnung, bleibt das Feld im JSON null und der Befund steht auf 'fehlt'. Die Verordnung ist pseudonymisiert: Werte in eckigen Klammern (z. B. [Name], [LANR]) bedeuten, dass das Feld ausgefüllt ist, der Wert aber aus Datenschutzgründen entfernt wurde. Behandle solche Felder als vorhanden. Frage niemals nach personenbezogenen Angaben.",
+          "maxIterations": 6,
+          "enableStreaming": false
+        }
+      }
+    },
+    {
+      "id": "22f31789-ae26-4929-b8e8-167dbbda5a3a",
+      "name": "Schema Befunde Fristen-Prüfer",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1168,
+        1904
+      ],
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\"type\": \"object\", \"properties\": {\"agent\": {\"type\": \"string\", \"enum\": [\"formal\", \"diagnose\", \"menge\", \"frist\"]}, \"befunde\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"properties\": {\"feld\": {\"type\": \"string\"}, \"status\": {\"type\": \"string\", \"enum\": [\"ok\", \"fehlt\", \"fehlerhaft\", \"hinweis\"]}, \"fundstelle\": {\"type\": \"string\"}, \"korrekturhinweis\": {\"type\": \"string\"}}, \"required\": [\"feld\", \"status\", \"fundstelle\", \"korrekturhinweis\"]}}}, \"required\": [\"agent\", \"befunde\"]}"
+      }
+    },
+    {
+      "id": "1eaa379e-3a9b-4b1e-8763-0ef7d541744f",
+      "name": "Ergebnis zusammenführen",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1712,
+        1216
+      ],
+      "parameters": {
+        "jsCode": "const VERGUETUNG_PRO_EINHEIT_EUR = 28; // Annahme fuer den Business Case, im Ist-Interview verifizieren\nconst basis = $('Fristen berechnen').first().json;\nconst vo = basis.vo;\nconst labels = { formal: 'Formal-Prüfer', diagnose: 'Diagnose-Prüfer', menge: 'Mengen-Prüfer', frist: 'Fristen-Prüfer' };\nconst icon = { ok: '✅', fehlt: '❌', fehlerhaft: '❌', hinweis: '⚠️' };\nconst clean = (s) => String(s || '').replace(/\\|/g, '/').replace(/\\n/g, ' ');\nconst befunde = [];\nfor (const item of $input.all()) {\n  const r = item.json.output || {};\n  for (const b of r.befunde || []) {\n    befunde.push({ agent: r.agent, feld: b.feld, status: b.status, fundstelle: b.fundstelle || null, korrekturhinweis: b.korrekturhinweis || null });\n  }\n}\nconst kritisch = befunde.filter((b) => b.status === 'fehlt' || b.status === 'fehlerhaft');\nconst hinweise = befunde.filter((b) => b.status === 'hinweis');\nconst gesamtstatus = kritisch.length ? 'rot' : hinweise.length ? 'gelb' : 'gruen';\nconst einheiten = basis.fakten.summe_einheiten || 0;\nconst risiko = gesamtstatus === 'rot' ? einheiten * VERGUETUNG_PRO_EINHEIT_EUR : 0;\nconst ampel = {\n  rot: '🔴 Bitte nicht behandeln – Verordnung erst korrigieren lassen',\n  gelb: '🟡 Behandlung möglich – Hinweise beachten',\n  gruen: '🟢 Verordnung in Ordnung'\n}[gesamtstatus];\nlet antwort = '**Verordnungs-Check ' + (vo.verordnung_ref || '') + '**\\n\\n' + ampel + '\\n\\n';\nif (risiko) antwort += 'Absetzungsrisiko: ca. ' + risiko + ' € (' + einheiten + ' Einheiten × ' + VERGUETUNG_PRO_EINHEIT_EUR + ' €, Annahme)\\n\\n';\nconst relevant = kritisch.concat(hinweise);\nif (relevant.length) {\n  antwort += '| Prüfer | Feld | Status | Was tun? | Fundstelle |\\n|---|---|---|---|---|\\n';\n  for (const b of relevant) {\n    antwort += '| ' + (labels[b.agent] || b.agent) + ' | ' + clean(b.feld) + ' | ' + icon[b.status] + ' ' + b.status + ' | ' + clean(b.korrekturhinweis) + ' | ' + clean(b.fundstelle) + ' |\\n';\n  }\n}\nantwort += '\\n' + befunde.length + ' Prüfpunkte von 4 Prüfern, davon ' + befunde.filter((b) => b.status === 'ok').length + ' in Ordnung.';\nreturn [{ json: {\n  verordnung_ref: vo.verordnung_ref || 'ohne Referenz',\n  eingabe: { verordnung: vo, fakten: basis.fakten },\n  gesamtstatus,\n  absetzungsrisiko_eur: risiko,\n  zusammenfassung: ampel,\n  dauer_ms: Date.now() - basis.start_ms,\n  freigabe: 'offen',\n  diagnose_auswahl: basis.diagnose_auswahl || { hinweise: [] },\n  befunde,\n  antwort\n} }];"
+      }
+    },
+    {
+      "id": "6fb6e671-db71-48dc-a74b-c13ad36aa41d",
+      "name": "Prüfung protokollieren",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1936,
+        1216
+      ],
+      "parameters": {
+        "tableId": "pruefungen",
+        "dataToSend": "autoMapInputData",
+        "inputsToIgnore": "befunde,antwort"
+      },
+      "credentials": {
+        "supabaseApi": {
+          "name": "Supabase Verordnungs_check"
+        }
+      }
+    },
+    {
+      "id": "f437ad71-3419-40be-944d-67f655c9ec96",
+      "name": "Befunde vorbereiten",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2160,
+        1216
+      ],
+      "parameters": {
+        "jsCode": "const pruefungId = $input.first().json.id;\nconst befunde = $('Ergebnis zusammenführen').first().json.befunde || [];\nreturn befunde.map((b) => ({ json: { pruefung_id: pruefungId, agent: b.agent, feld: b.feld, status: b.status, fundstelle: b.fundstelle, korrekturhinweis: b.korrekturhinweis } }));"
+      }
+    },
+    {
+      "id": "d45ff502-0bd6-40ca-bf8e-c772c615e7cb",
+      "name": "Befunde protokollieren",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2384,
+        1216
+      ],
+      "parameters": {
+        "tableId": "befunde",
+        "dataToSend": "autoMapInputData"
+      },
+      "credentials": {
+        "supabaseApi": {
+          "name": "Supabase Verordnungs_check"
+        }
+      }
+    },
+    {
+      "id": "d52fb59b-0e11-4667-88aa-a3a00412856a",
+      "name": "Kam vom Formular?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2608,
+        1216
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "quelle-formular",
+              "leftValue": "={{ $('Formular: Verordnung erfassen').isExecuted }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "ffb44b87-0fac-4fc7-9657-c55c84754cc0",
+      "name": "Ergebnis anzeigen",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        2868,
+        1056
+      ],
+      "parameters": {
+        "operation": "completion",
+        "respondWith": "text",
+        "completionTitle": "Verordnungs-Check – Ergebnis",
+        "completionMessage": "={{ $('Ergebnis zusammenführen').first().json.antwort }}"
+      }
+    },
+    {
+      "id": "d1266732-d719-4771-b11f-ddbd400895fc",
+      "name": "Antwort an Rezeption",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2868,
+        1376
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "antwort-text",
+              "name": "output",
+              "value": "={{ $('Ergebnis zusammenführen').first().json.antwort }}",
+              "type": "string"
+            },
+            {
+              "id": "antwort-status",
+              "name": "gesamtstatus",
+              "value": "={{ $('Ergebnis zusammenführen').first().json.gesamtstatus }}",
+              "type": "string"
+            },
+            {
+              "id": "antwort-ref",
+              "name": "verordnung_ref",
+              "value": "={{ $('Ergebnis zusammenführen').first().json.verordnung_ref }}",
+              "type": "string"
+            },
+            {
+              "id": "antwort-risiko",
+              "name": "absetzungsrisiko_eur",
+              "value": "={{ $('Ergebnis zusammenführen').first().json.absetzungsrisiko_eur }}",
+              "type": "number"
+            },
+            {
+              "id": "antwort-auswahl",
+              "name": "diagnose_auswahl",
+              "value": "={{ $('Ergebnis zusammenführen').first().json.diagnose_auswahl }}",
+              "type": "object"
+            },
+            {
+              "id": "antwort-befunde",
+              "name": "befunde",
+              "value": "={{ $('Ergebnis zusammenführen').first().json.befunde }}",
+              "type": "array"
+            },
+            {
+              "id": "antwort-fakten",
+              "name": "fakten",
+              "value": "={{ $('Fristen berechnen').first().json.fakten }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Rezeption: Verordnung eingeben": {
+      "main": [
+        [
+          {
+            "node": "Eingabe prüfen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Eingabe prüfen": {
+      "main": [
+        [
+          {
+            "node": "Verordnung strukturiert?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formular: Verordnung erfassen": {
+      "main": [
+        [
+          {
+            "node": "Verordnung bauen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verordnung bauen": {
+      "main": [
+        [
+          {
+            "node": "Eingabe prüfen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verordnung strukturiert?": {
+      "main": [
+        [
+          {
+            "node": "Verordnung übernehmen",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Text redigieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verordnung übernehmen": {
+      "main": [
+        [
+          {
+            "node": "Fristen berechnen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fristen berechnen": {
+      "main": [
+        [
+          {
+            "node": "PII entfernen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text redigieren": {
+      "main": [
+        [
+          {
+            "node": "Verordnung erfassen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verordnung erfassen": {
+      "main": [
+        [
+          {
+            "node": "Diagnosen auswählen",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Hinweis Freitext",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Modell": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Verordnung erfassen",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Formal-Prüfer",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Diagnose-Prüfer",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Mengen-Prüfer",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Fristen-Prüfer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schema Verordnung": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Verordnung erfassen",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Diagnosen auswählen": {
+      "main": [
+        [
+          {
+            "node": "Fristen berechnen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PII entfernen": {
+      "main": [
+        [
+          {
+            "node": "Formal-Prüfer",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Diagnose-Prüfer",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Mengen-Prüfer",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fristen-Prüfer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formal-Prüfer": {
+      "main": [
+        [
+          {
+            "node": "Befunde sammeln",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Regelwerk Formal-Prüfer": {
+      "ai_tool": [
+        [
+          {
+            "node": "Formal-Prüfer",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Embeddings (Suche)": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Regelwerk Formal-Prüfer",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Regelwerk Diagnose-Prüfer",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Regelwerk Mengen-Prüfer",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schema Befunde Formal-Prüfer": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Formal-Prüfer",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Befunde sammeln": {
+      "main": [
+        [
+          {
+            "node": "Ergebnis zusammenführen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Diagnose-Prüfer": {
+      "main": [
+        [
+          {
+            "node": "Befunde sammeln",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Regelwerk Diagnose-Prüfer": {
+      "ai_tool": [
+        [
+          {
+            "node": "Diagnose-Prüfer",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schema Befunde Diagnose-Prüfer": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Diagnose-Prüfer",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mengen-Prüfer": {
+      "main": [
+        [
+          {
+            "node": "Befunde sammeln",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Regelwerk Mengen-Prüfer": {
+      "ai_tool": [
+        [
+          {
+            "node": "Mengen-Prüfer",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schema Befunde Mengen-Prüfer": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Mengen-Prüfer",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fristen-Prüfer": {
+      "main": [
+        [
+          {
+            "node": "Befunde sammeln",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Schema Befunde Fristen-Prüfer": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Fristen-Prüfer",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ergebnis zusammenführen": {
+      "main": [
+        [
+          {
+            "node": "Prüfung protokollieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prüfung protokollieren": {
+      "main": [
+        [
+          {
+            "node": "Befunde vorbereiten",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Befunde vorbereiten": {
+      "main": [
+        [
+          {
+            "node": "Befunde protokollieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Befunde protokollieren": {
+      "main": [
+        [
+          {
+            "node": "Kam vom Formular?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Kam vom Formular?": {
+      "main": [
+        [
+          {
+            "node": "Ergebnis anzeigen",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Antwort an Rezeption",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
