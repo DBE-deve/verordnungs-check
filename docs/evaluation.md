@@ -83,5 +83,5 @@ Bessere Prompts haben das nur teilweise behoben: Von v2 auf v3 sank der Fehler v
 `tests/fakten.test.mjs` prüft den Code-Knoten „Fristen berechnen“ direkt aus dem Workflow-Export: Fristgrenzen (28 und 14 Tage, jeweils genau an der Grenze), Unterbrechung mit und ohne Grund, LANR-Format und die ICD-Zuordnung.
 
 ```bash
-node tests/fakten.test.mjs   # 13/13 Tests bestanden
+node tests/fakten.test.mjs   # 34/34 Tests bestanden (v4: 13, Merge: 21)
 ```
