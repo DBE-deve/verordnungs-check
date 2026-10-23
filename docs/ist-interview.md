@@ -26,6 +26,19 @@ Ausgefüllter Fragebogen: [`field-study/Ist-Interview_Fragebogen_2026-10-16.pdf`
 
 **Fazit der Praxis:** Relativ komplexes System. Die Praxis arbeitet mit Doppelkontrollen; laut Literatur sind auch 100-%-Kontrollen höchstens etwa 85 % wirksam. Vorhandene Systeme helfen bei der Verarbeitung, nicht bei Qualitätssicherung oder Prozesskontrolle.
 
+## Nachtrag vom 23.10.2026
+
+Der Fragebogen vom 16.10. enthielt keine Frage zur bisherigen KI-Nutzung und zur Organisation über zwei Standorte. Beides fragt die IHK ab. Der Nachtrag steht als eigene Seite neben dem Original: [`field-study/Ist-Interview_Nachtrag_2026-10-23.pdf`](field-study/Ist-Interview_Nachtrag_2026-10-23.pdf). Das Original bleibt unverändert.
+
+| Nr. | Thema | Antwort |
+|---|---|---|
+| N01 | KI-Tools heute | **Keine**, in keinem Bereich und an keinem Standort |
+| N02 | Organisation | Zwei Praxen an zwei Standorten. **Terminvergabe zentral** für beide. Praxis 1 behandelt GKV-Patienten, Praxis 2 Privatpatienten |
+
+Die Angaben beruhen auf der Kenntnis des Interviewers. Die Bestätigung durch die Mitinhaberin steht auf dem Nachtrag noch aus (Feld „Bestätigung“).
+
+**Einordnung:** Die Praxis gehört zur Mehrheit. Laut Destatis nutzte 2024 jedes fünfte Unternehmen KI (20 %), laut IW-Befragung 37 %, bei kleinen Unternehmen 36 % (beide zitiert im IHK-Rahmenplan). Achtung beim Zitieren: Die 66 % aus der IW-Befragung sind der Anteil **großer Unternehmen, die KI nutzen**, nicht der Anteil ohne KI.
+
 ## Was daraus folgt
 
 1. **Der Schwerpunkt verschiebt sich.** 90 % der Fehler entstehen bei Doppel- und Folgeverordnungen. Die bisherigen vier Prüfer decken vor allem die übrigen 10 % ab. Die **Verordnungsfall-Prüfung** (Sprint 2) bleibt deshalb oberste Priorität. Die **Doppelverordnungs-Prüfung** nutzt dieselbe Historie und wird als nächster Kandidat bewertet (bisher Ausbaustufe nach dem Capstone).
