@@ -25,7 +25,7 @@
 ## Vorhandene Bausteine
 
 - [Architektur](../architektur.md), [Build-Plan](../build-plan.md), [Dateneingang](../dateneingang.md), [Governance](../governance.md)
-- Workflow-Export: [vier-pruefer.json](../../n8n/vier-pruefer.json)
+- Workflow-Export: [merge-formular-vier-pruefer.json](../../n8n/merge-formular-vier-pruefer.json)
 - Folien „Einsatzplanung“ und „Risiken“ (Entwurf) in der [IHK-Präsentation](../praesentation/Verordnungs-Check_IHK_Arbeitsstand_2026-10-19.pdf)
 
 ## Lücken

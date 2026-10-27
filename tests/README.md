@@ -1,13 +1,30 @@
 # Tests: Gebrauchsanweisung
 
-Dieser Ordner enthält zwei Arten von Tests:
+Dieser Ordner enthält drei Arten von Tests:
 
 | Datei | Was | Wofür |
 |---|---|---|
-| `fakten.test.mjs` | Automatische Tests für den Code-Knoten „Fristen berechnen“ | Fristen, Formate, ICD-Zuordnung ohne Sprachmodell prüfen (`node tests/fakten.test.mjs`) |
+| `fakten.test.mjs`, `diagnosen.test.mjs` | Automatische Tests der Code-Knoten „Fristen berechnen“ und „Diagnosen auswählen“ | Rechnen und Regeln ohne Sprachmodell prüfen |
+| `pii.test.mjs` | Redaktion: Marker, Pflichtangaben, Dienst-Fallback, Verdrahtung | Prüfen, dass kein Identifikator an ein Modell geht |
+| `formular.test.mjs` | Erfassungsmaske gegen Workflow-Schema, Vorlagen-Seite gegen den Seed, Abdeckung der 18 Kriterien | Prüfen, dass Maske, Seed und Workflow zusammenpassen |
+| `workflow.test.mjs` | Struktur des Exports: eindeutige IDs, gültige Verbindungen, Erreichbarkeit, keine Credential-IDs, Code syntaktisch | Prüfen, dass der Export importierbar bleibt |
 | `testbatterie.md` | 13 angewandte Tests + 100 neue Fälle zum Lesen und Abhaken | Prüfen der Soll-Werte, manuelle Testläufe |
 | `testbatterie.json` | Dieselben 100 Fälle maschinenlesbar | Automatischer Testlauf, Auswertung |
 | `testbatterie_erzeugen.py` | Generator für MD und JSON | Soll-Werte ändern, ohne dass MD und JSON auseinanderlaufen |
+
+```bash
+npm test                    # alle automatischen Tests (Fakten, Diagnoseauswahl, PII, Formular)
+npm run test:redaktion      # Regeln des Redaktionsdienstes (Python, ohne Modell)
+npm run vorlagen:pruefen    # 23 Seed-Fälle gegen den laufenden Workflow, mit Abdeckungstabelle
+```
+
+Die automatischen Tests lesen den Workflow-Export `n8n/merge-formular-vier-pruefer.json`. Ändert sich ein Code-Knoten, schlagen sie fehl, bevor die Änderung in die Instanz wandert.
+
+## 0. Seed-Fälle: ein Fall pro Prüfkriterium
+
+`supabase/seed/testfaelle.sql` enthält 23 Fälle. Jeder Fall ändert gegenüber dem grünen Basisfall (TF01) genau eine Sache, damit der Befund eindeutig zuzuordnen ist; TF01–TF10 sind die ursprünglichen Fälle und Kontrollfälle, TF11–TF23 schließen die Lücken zu den 18 Prüfkriterien (Zuordnung in [`../docs/pruefkriterien.md`](../docs/pruefkriterien.md)).
+
+`npm run vorlagen:pruefen` schickt alle Fälle an den Webhook und prüft **Ampel und erwartete Befunde**. Am Ende steht, welches Kriterium von welchem Fall abgedeckt ist. Dieselben Fälle lassen sich auf der Vorlagen-Seite (`npm run formular` → `/vorlagen`) einzeln anklicken.
 
 ## 1. Vor dem ersten Einsatz: Soll-Werte prüfen
 
@@ -25,7 +42,7 @@ Die Soll-Werte sind aus den Regelwerken abgeleitet (HeilM-RL, Heilmittelkatalog,
 | **D** (Entwicklung, 35 Fälle) | Darf zum Testen und Nachbessern benutzt werden. |
 | Spalte **v5** | Braucht die Verordnungsfall-Prüfung mit Historie. Bis v5 steht, nicht mitzählen. |
 
-Für schnelle Kontrollen nach einer Änderung: D-Fälle oder die Seed-Fälle TF01–TF10 (`supabase/seed/testfaelle.sql`).
+Für schnelle Kontrollen nach einer Änderung: D-Fälle oder die Seed-Fälle TF01–TF23 (`supabase/seed/testfaelle.sql`).
 
 ## 3. Einen Fall manuell prüfen
 

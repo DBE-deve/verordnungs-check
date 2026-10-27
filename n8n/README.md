@@ -2,23 +2,59 @@
 
 | Datei | Workflow | Zweck |
 |---|---|---|
+| `merge-formular-vier-pruefer.json` | Verordnungs-Check | **Der** Workflow: Chat **und** Muster-13-Formular in einem, PII-Redaktion, Diagnoseauswahl, vier Prüf-Agenten, Ampel, Protokoll |
 | `wissensbasis-laden.json` | Verordnungs-Check – Wissensbasis laden | Lädt die Regelwerke als PDF, teilt sie in Abschnitte, erzeugt Embeddings und speichert sie in Supabase |
-| `vier-pruefer.json` | Verordnungs-Check – Vier Prüfer | Chat, Erfassung, vier Prüf-Agenten, Ampel, Protokoll (Stand v4, **Fallback**) |
-| `merge-formular-vier-pruefer.json` | Verordnungs-Check – Merge (Formular + Vier Prüfer) | Zusammenführung mit Valentins Stand (Fork `ValentinKlamka/verordnungs-check`): Chat **und** Muster-13-Formular in einem Workflow, PII-Redaktion, Diagnoseauswahl, deterministische Pflichtangaben; Modell gpt-4.1-mini und OpenAI-Embeddings wie v4 |
 
-Import: n8n → Workflows → Import from File. Danach die Credentials setzen:
-- **OpenAI** (Chat-Modell und Embeddings)
-- **Supabase** (Host-URL des Projekts und service_role-Schlüssel – nie ins Repository!)
+Seit dem Merge vom 27.10.2026 gibt es nur noch diesen einen Prüf-Workflow. Die früheren Exporte (`vier-pruefer.json` als v4-Fallback, `formular.json` als eigener Formular-Workflow) sind entfallen – ihre Historie steht in Git und in [`../docs/aenderungsprotokoll.md`](../docs/aenderungsprotokoll.md).
 
-Danach einmal **Wissensbasis laden** ausführen (füllt die Tabelle `documents`, rund 380 Abschnitte), dann den Chat im Workflow **Vier Prüfer** öffnen und eine Testverordnung aus `supabase/seed/testfaelle.sql` als JSON einfügen.
+## Import
 
-Stand der Exporte: Version v4 nach der Evaluation vom 13.10.2026 (siehe `docs/evaluation.md`).
+**Über die Oberfläche** (Cloud und lokal): Workflows → *Import from File* → `merge-formular-vier-pruefer.json`.
 
-## Merge-Workflow (20.10.2026)
+**Per CLI** in eine bestehende Instanz: Der CLI-Import braucht IDs in der Datei und löst Credentials nur über die ID auf (getestet mit n8n 2.20.8). `npm run n8n:vorbereiten` erzeugt dafür passende Dateien:
 
-- **Zwei Eingänge, eine Prüfkette:** Chat (Text oder JSON) und n8n-Formular (Muster 13). Das Formular läuft im selben Workflow statt per HTTP-Aufruf auf den Chat-Webhook; der Knoten „Kam vom Formular?“ entscheidet am Ende, ob das Ergebnis im Chat oder auf der Abschlussseite des Formulars erscheint.
-- **Modell und Embeddings:** gpt-4.1-mini und `text-embedding-3-small` (OpenAI) wie in v4. Valentins Fork nutzt OpenRouter mit Gemini-Embeddings; die passen nicht zur Wissensbasis in Supabase, die mit OpenAI-Embeddings geladen ist.
-- **Fristen-Prüfer ohne Vektorsuche:** wie in Valentins Stand; die Fundstelle (HeilM-RL § 15/§ 16) steht im Prompt.
-- **Datenbank:** setzt Migration `002_diagnose_auswahl.sql` voraus (Spalte `diagnose_auswahl` in `pruefungen`).
-- **Fallback:** `vier-pruefer.json` (v4) bleibt unverändert und lauffähig.
-- **Änderungen seit dem Merge:** siehe [`docs/aenderungsprotokoll.md`](../docs/aenderungsprotokoll.md).
+```bash
+npm run n8n:vorbereiten
+docker cp .n8n/tmp/import-fremdinstanz/verordnungs-check.json <container>:/tmp/
+docker exec <container> n8n import:workflow --input=/tmp/verordnungs-check.json
+docker exec <container> n8n publish:workflow --id=<workflow-id>   # älter: update:workflow --active=true
+docker restart <container>
+```
+
+## Credentials
+
+Die Knoten verweisen auf diese Namen – in der Instanz genau so anlegen oder die Verweise anpassen:
+
+| Name | Typ | Inhalt |
+|---|---|---|
+| `OpenAI account` | OpenAI | API-Key; Chat-Modell `gpt-4.1-mini` (Temperatur 0,1), Embeddings `text-embedding-3-small` |
+| `Supabase Verordnungs_check` | Supabase | Host-URL und service_role-Key des Projekts – nie ins Repository |
+
+Die Wissensbasis ist mit `text-embedding-3-small` (1536 Dimensionen) geladen. Ein anderes Embedding-Modell macht die Vektorsuche unbrauchbar: `wissensbasis-laden.json` erneut ausführen.
+
+## Adressen
+
+| Was | Adresse | Wo einstellen |
+|---|---|---|
+| Chat | `/webhook/verordnungs-check/chat` | `webhookId` des Chat-Triggers |
+| Formular | `/form/verordnungs-check-merge` | Feld *Path* im Form-Trigger |
+| Abschlussseite | erscheint nach dem Absenden | Knoten `Ergebnis anzeigen` |
+
+Die Weiche `Kam vom Formular?` entscheidet am Ende, ob die Antwort auf der Formular-Abschlussseite oder im Chat erscheint.
+
+## PII-Redaktion im Freitext-Weg
+
+`Text redigieren` ruft den Redaktionsdienst aus [`../redaktion/`](../redaktion/README.md) auf:
+
+- Standard-URL: `http://host.docker.internal:5680/redigieren`
+- In der Cloud über die Umgebungsvariable `REDAKTION_URL` setzen:
+  `={{ $env.REDAKTION_URL || 'http://host.docker.internal:5680/redigieren' }}` steht bereits im Knoten.
+- Ist der Dienst nicht erreichbar, greift automatisch `Text redigieren (Muster)` – dieselben Regeln als Code im Workflow. Es geht **nie** Rohtext an ein Modell, nur weniger gründlich redigiert.
+
+Der Formular-Weg braucht den Dienst nicht: Dort ersetzt `PII entfernen` die Felder deterministisch.
+
+## Eigenheiten beim CLI-Import
+
+- **Knoten-Reihenfolge:** n8n ermittelt Vorgänger/Nachfolger teilweise über die Position in der `nodes`-Liste. Steht ein Knoten dort vor seinen Nachfolgern, kann die Ausführung mit `Cannot read properties of undefined` scheitern.
+- **webhookId:** Trigger-Knoten (`chatTrigger`, `formTrigger`) brauchen eine `webhookId`, sonst meldet die Aktivierung `No webhook path could be found` und die Adresse liefert 404.
+- **Modellwahl:** `gpt-4.1-mini` ist bewusst klein gewählt (Kosten, Latenz). Beobachtet: einzelne Läufe brechen mit `Model output doesn't fit required format` ab; dagegen sind alle fünf Agenten auf `retryOnFail` (3 Versuche) gesetzt.

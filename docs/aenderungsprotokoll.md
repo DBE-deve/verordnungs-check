@@ -2,6 +2,48 @@
 
 Kurznotizen zu Änderungen an den Workflows: was, warum, wie getestet. Neueste oben.
 
+## 27.10.2026 · Zusammenführung der beiden Stände: ein Workflow, OpenAI, PII-Fallback
+
+**Workflow:** `n8n/merge-formular-vier-pruefer.json` ist jetzt der **einzige** Prüf-Workflow. `vier-pruefer.json` (v4) und `formular.json` sind entfallen; ihre Historie steht in Git.
+
+**Anlass**
+
+- Zwei Stände mit unterschiedlichen Verbesserungen: hier die Prüfer-Prompts (Summen-Fakt, Mandats-Abgrenzung, KBV-Präzisierung), im Fork die Erfassungsmaske Muster 13, die PII-Redaktion mit Dienst und 23 Seed-Fälle mit erwarteten Befunden.
+- Die Cloud-Instanz nutzt OpenAI (`gpt-4.1-mini`, `text-embedding-3-small`). Die Gemini-Embeddings des Forks passen nicht zur dort geladenen Wissensbasis.
+- Der Redaktionsdienst des Forks ist ein lokaler Python-Container (Port 5680) und in der Cloud nicht erreichbar; ein Freitext-Weg, der dann abbricht, wäre dort unbrauchbar.
+
+**Änderungen**
+
+| Bereich | Änderung |
+|---|---|
+| Struktur | Chat **und** Formular in einem Workflow (aus dem Merge-Stand übernommen); die Weiche `Kam vom Formular?` wählt die Antwort. Kein HTTP-Aufruf zwischen Workflows mehr. |
+| PII im Freitext | `Text redigieren` ruft den Dienst über `{{ $env.REDAKTION_URL \|\| 'http://host.docker.internal:5680/redigieren' }}`; bei Fehler geht es auf den neuen Knoten `Text redigieren (Muster)` (dieselben Regeln als Code) und danach in `Redaktion übernehmen`. Es geht nie Rohtext an ein Modell. |
+| Diagnose-Prüfer | Satz ergänzt: ein allgemeiner Prüfauftrag („bitte prüfen Sie, ob …") ist kein Befund. Das verhinderte in einem Lauf ein falsches Gelb bei TF08. |
+| Leitsymptomatik | Der Code-Fakt `leitsymptomatik_zulaessig` (WS/EX nur a, b, x) ist **wieder entfernt**; der Prüfer beurteilt a/b/c bzw. Freitext selbst (siehe Offen). |
+| Mengen-Prüfer | `summe_einheiten_vorrangig` und die Mandats-Abgrenzung übernommen. Die Regel „Frequenzabweichung ist kein Befund" ist **nicht** übernommen – eine belegte Abweichung bleibt ein Hinweis. |
+| Agenten | `retryOnFail` (3 Versuche) an allen fünf Agenten, wie im Fork. |
+| Tests | Alle automatischen Tests lesen den einen Export. `fakten.test.mjs` prüft zusätzlich `summe_einheiten_vorrangig`; neu sind `pii.test.mjs`, `formular.test.mjs`, `diagnosen.test.mjs` und die Seed-Auswertung `npm run vorlagen:pruefen`. |
+| Seed | 23 Fälle, je einer pro Prüfkriterium; Erwartung enthält jetzt die erwarteten Befunde, nicht nur die Ampel. |
+
+**Nicht übernommen (offen, Vier-Augen-Prüfung)**
+
+- Leitsymptomatik-Katalog a/b/x: TF10 (Leitsymptomatik c bei EX) bleibt damit grün, wie im Seed hinterlegt. Wird der Katalog bestätigt, müssen Seed, `docs/pruefkriterien.md` (Kriterium 12) und TF10 geändert werden.
+- „Frequenzabweichung ist kein Befund" (HeilM-RL § 12 Abs. 1 Satz 4): TF22 bleibt gelb. Bei Bestätigung entfällt Kriterium 16 in seiner jetzigen Form.
+
+**Tests**
+
+| Prüfung | Ergebnis |
+|---|---|
+| `npm test` (Fakten, Diagnoseauswahl, PII, Formular) | 15 + 14 + 29 Prüfungen, alle bestanden |
+| `npm run test:redaktion` | 14 Regeln bestanden |
+| Code-Fakten im Export | `leitsymptomatik_zulaessig` entfernt, `summe_einheiten_vorrangig` vorhanden |
+| PII-Fallback | `pii.test.mjs` führt den Muster-Knoten aus: Name, Versichertennummer und Geburtsdatum werden ersetzt |
+
+**Offen**
+
+- Ende-zu-Ende-Lauf mit `gpt-4.1-mini` in der Cloud-Instanz steht aus (lokal liegt kein OpenAI-Key). Nach dem Import: `npm run vorlagen:pruefen -- --url https://<instanz>/webhook/verordnungs-check/chat`.
+- `summe_einheiten` bleibt für die Absetzungsrechnung bei 28 € je Einheit (Ist-Interview: 32 €).
+
 ## 23.10.2026 · Merge-Workflow: Diagnose-Prüfer, zwei neue Code-Fakten
 
 **Workflow:** Verordnungs-Check – Merge, Export `n8n/merge-formular-vier-pruefer.json`. v4 (Fallback) unverändert.
