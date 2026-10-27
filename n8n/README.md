@@ -4,6 +4,9 @@
 |---|---|---|
 | `merge-formular-vier-pruefer.json` | Verordnungs-Check | **Der** Workflow: Chat **und** Muster-13-Formular in einem, PII-Redaktion, Diagnoseauswahl, vier Prüf-Agenten, Ampel, Protokoll |
 | `wissensbasis-laden.json` | Verordnungs-Check – Wissensbasis laden | Lädt die Regelwerke als PDF, teilt sie in Abschnitte, erzeugt Embeddings und speichert sie in Supabase |
+| `cloud-verordnungs-check.json` | Verordnungs-Check – Cloud (Valentins Architektur, Regel-Redaktion) | **Stand in der n8n Cloud seit 27.10.2026**: Merge-Workflow 1:1, Freitext-Redaktion als Code-Knoten (`redaktion/cloud/regeln.js`, Port von `redaktion/regeln.py` ohne Namensmodell), fünf Regel-Fakten mit Code-Urteilen. Formular `/form/verordnungs-check-cloud` |
+| `sdk/testbatterie-datenbruecke.mjs` | Verordnungs-Check – Testbatterie Datenbrücke | Webhooks für `tests/cloud/batterie.py`: Testfälle aus Supabase lesen, Ergebnisse nach `testlaeufe` schreiben (Token nur in der Instanz) |
+| `sdk/testfaelle-laden.mjs` | Verordnungs-Check – Testfälle laden | Einmalig: Seed und Testbatterie aus dem Repo in die Tabelle `testfaelle` |
 
 Seit dem Merge vom 27.10.2026 gibt es nur noch diesen einen Prüf-Workflow. Die früheren Exporte (`vier-pruefer.json` als v4-Fallback, `formular.json` als eigener Formular-Workflow) sind entfallen – ihre Historie steht in Git und in [`../docs/aenderungsprotokoll.md`](../docs/aenderungsprotokoll.md).
 

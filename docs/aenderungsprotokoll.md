@@ -2,6 +2,30 @@
 
 Kurznotizen zu Änderungen an den Workflows: was, warum, wie getestet. Neueste oben.
 
+## 27.10.2026 · Cloud-Fassung, Testbatterie, fünf Regeln im Code
+
+**Workflow:** „Verordnungs-Check – Cloud“, Export `n8n/cloud-verordnungs-check.json`. Der Merge-Workflow bleibt unverändert als Rückfall aktiv.
+
+**Anlass**
+- Testbatterie und Demo sollen in der Cloud laufen. Der lokale Redaktionsdienst (Python, BERT-Namensmodell) ist dort nicht erreichbar.
+- Lauf 1 der Testbatterie (Blindtest, 59 E-Fälle × 3): 83,1 % richtige Ampeln, 5 übersehene rote Verordnungen, 2 kritische Fehlalarme. 7 von 10 Fehlern betrafen Regeln, die das Modell statt des Codes prüfte (Mengen, Leitsymptomatik, ergänzende Heilmittel, Frequenz).
+
+**Änderungen**
+
+| Bereich | Änderung |
+|---|---|
+| Redaktion | `Text redigieren` (HTTP) und `Text redigieren (Muster)` ersetzt durch `Text redigieren (Regeln)`: JavaScript-Port von `redaktion/regeln.py` mit Unicode-Wortgrenzen. Gegen das Original geprüft: 17 Texte, 0 Abweichungen (`redaktion/cloud/vergleich.py`). Grenze: Namen ohne Rollenwort erkennt nur das Namensmodell. |
+| Fakten (`Fristen berechnen`) | neu: `leitsymptomatik_zulaessig` (WS/EX nur a, b, x), `hoechstmenge_eingehalten` (6 je VO), `ergaenzend_einheiten_ok`, `ergaenzendes_heilmittel_zulaessig` (Liste je Gruppe, Traktion nicht bei EX), `frequenz_im_rahmen` (1–3× pro Woche) |
+| Code-Urteile (`Ergebnis zusammenführen`) | Ist ein Fakt entschieden, setzt der Code den Befund; widerspricht das Modell, gewinnt der Code. Frequenz außerhalb des Rahmens = Hinweis (Teamentscheidung 27.10.). Formal-Prüfer: Frequenz und Leitsymptomatik nur auf Vorhandensein. |
+| Formular | Pfad `verordnungs-check-cloud` (sprechende Adresse funktioniert in der Cloud) |
+| Daten | 123 Testfälle in Supabase (`testfaelle`), neue Tabelle `testlaeufe` (`supabase/migrations/003_testlaeufe.sql`) |
+
+Prompts unverändert. Keine ICD-Codes aus Testfällen im Code. Vor Lauf 2 gegen alle 113 strukturierten Fälle geprüft: keine neuen Fehlalarme durch die Fakten.
+
+**Test** (`tests/cloud/`): Lauf 2 94,9 %, keine übersehene rote Verordnung; Nachtest nach der Formal-Korrektur 15/15 korrekt, rechnerisch 96,6 % auf dem E-Set. Lauf 2 ist kein Blindtest mehr.
+
+**Offen:** KBV-Liste als Tabelle im Code (2 gelbe Fälle), Freitext ohne Feldbezeichnung („WS“), Laufzeit 34 s, Verordnungsfall-Prüfung, Tests in `tests/` für den Cloud-Export ergänzen; gpt-4.1-mini wird von OpenAI als veraltet geführt.
+
 ## 27.10.2026 · Zusammenführung der beiden Stände: ein Workflow, OpenAI, PII-Fallback
 
 **Workflow:** `n8n/merge-formular-vier-pruefer.json` ist jetzt der **einzige** Prüf-Workflow. `vier-pruefer.json` (v4) und `formular.json` sind entfallen; ihre Historie steht in Git.

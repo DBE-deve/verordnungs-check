@@ -1,0 +1,224 @@
+{
+ "E": {
+  "n": 59,
+  "ok": 49,
+  "quote": 0.8305084745762712,
+  "rot_uebersehen": [
+   "TF076 KG 4 + MT 4 = 8 bei EX",
+   "TF078 Ergänzend 8 Einheiten bei 6 vorrangigen",
+   "TF081 Ergänzend Elektro 6 bei KG 3",
+   "TF106 Leitsymptomatik c bei EX",
+   "TF107 Traktion als ergänzendes Heilmittel bei EX"
+  ],
+  "krit": [
+   "TF032 Freitext: LWS, zwei Heilmittel",
+   "TF108 Frequenz 4x/Woche"
+  ],
+  "instabil": [
+   "TF037 LWS-Bandscheibe mit Radikulopathie, Zweitcode vorhanden",
+   "TF039 Spondylose mit Radikulopathie",
+   "TF108 Frequenz 4x/Woche"
+  ],
+  "falsch": [
+   [
+    "TF019 Leitsymptomatik x mit patientenindividueller Angabe",
+    "gruen",
+    "gelb",
+    [
+     "gelb",
+     "gelb",
+     "gelb"
+    ]
+   ],
+   [
+    "TF032 Freitext: LWS, zwei Heilmittel",
+    "gruen",
+    "rot",
+    [
+     "rot",
+     "rot",
+     "rot"
+    ]
+   ],
+   [
+    "TF037 LWS-Bandscheibe mit Radikulopathie, Zweitcode vorhanden",
+    "gelb",
+    "gruen",
+    [
+     "gruen",
+     "gelb",
+     "gruen"
+    ]
+   ],
+   [
+    "TF039 Spondylose mit Radikulopathie",
+    "gelb",
+    "gruen",
+    [
+     "gruen",
+     "gelb",
+     "gruen"
+    ]
+   ],
+   [
+    "TF076 KG 4 + MT 4 = 8 bei EX",
+    "rot",
+    "gruen",
+    [
+     "gruen",
+     "gruen",
+     "gruen"
+    ]
+   ],
+   [
+    "TF078 Ergänzend 8 Einheiten bei 6 vorrangigen",
+    "rot",
+    "gruen",
+    [
+     "gruen",
+     "gruen",
+     "gruen"
+    ]
+   ],
+   [
+    "TF081 Ergänzend Elektro 6 bei KG 3",
+    "rot",
+    "gruen",
+    [
+     "gruen",
+     "gruen",
+     "gruen"
+    ]
+   ],
+   [
+    "TF106 Leitsymptomatik c bei EX",
+    "rot",
+    "gruen",
+    [
+     "gruen",
+     "gruen",
+     "gruen"
+    ]
+   ],
+   [
+    "TF107 Traktion als ergänzendes Heilmittel bei EX",
+    "rot",
+    "gruen",
+    [
+     "gruen",
+     "gruen",
+     "gruen"
+    ]
+   ],
+   [
+    "TF108 Frequenz 4x/Woche",
+    "gelb",
+    "rot",
+    [
+     "rot",
+     "gelb",
+     "rot"
+    ]
+   ]
+  ],
+  "laeufe": 177,
+  "median_s": 34.504,
+  "fehler": [],
+  "befund": {
+   "erwartet": 138,
+   "gefunden": 110,
+   "quote": 0.7971014492753623,
+   "fund_n": 146,
+   "fund_ok": 142,
+   "fund_quote": 0.9726027397260274
+  }
+ },
+ "D": {
+  "n": 31,
+  "ok": 28,
+  "quote": 0.9032258064516129,
+  "rot_uebersehen": [
+   "TF075 12 Einheiten bei WS"
+  ],
+  "krit": [],
+  "instabil": [],
+  "falsch": [
+   [
+    "TF038 Spinalkanalstenose lumbal mit Radikulopathie",
+    "gelb",
+    "gruen",
+    [
+     "gruen"
+    ]
+   ],
+   [
+    "TF040 Spondylitis ankylosans, WS",
+    "gelb",
+    "gruen",
+    [
+     "gruen"
+    ]
+   ],
+   [
+    "TF075 12 Einheiten bei WS",
+    "rot",
+    "gruen",
+    [
+     "gruen"
+    ]
+   ]
+  ],
+  "laeufe": 31,
+  "median_s": 33.443,
+  "fehler": [],
+  "befund": {
+   "erwartet": 25,
+   "gefunden": 21,
+   "quote": 0.84,
+   "fund_n": 26,
+   "fund_ok": 25,
+   "fund_quote": 0.9615384615384616
+  }
+ },
+ "S": {
+  "n": 23,
+  "ok": 21,
+  "quote": 0.9130434782608695,
+  "rot_uebersehen": [
+   "TF10 Kontrollfall dringlich, fristgerecht"
+  ],
+  "krit": [
+   "TF22 Frequenz außerhalb des Rahmens"
+  ],
+  "instabil": [],
+  "falsch": [
+   [
+    "TF10 Kontrollfall dringlich, fristgerecht",
+    "rot",
+    "gruen",
+    [
+     "gruen"
+    ]
+   ],
+   [
+    "TF22 Frequenz außerhalb des Rahmens",
+    "gelb",
+    "rot",
+    [
+     "rot"
+    ]
+   ]
+  ],
+  "laeufe": 23,
+  "median_s": 34.383,
+  "fehler": [],
+  "befund": {
+   "erwartet": 22,
+   "gefunden": 22,
+   "quote": 1.0,
+   "fund_n": 27,
+   "fund_ok": 27,
+   "fund_quote": 1.0
+  }
+ }
+}

@@ -1,0 +1,145 @@
+{
+ "E": {
+  "n": 59,
+  "ok": 56,
+  "quote": 0.9491525423728814,
+  "rot_uebersehen": [],
+  "krit": [
+   "TF032 Freitext: LWS, zwei Heilmittel",
+   "TF108 Frequenz 4x/Woche"
+  ],
+  "instabil": [
+   "TF101 Beginn exakt am 28. Tag",
+   "TF109 M50.1 ohne Zweitcode G55.1"
+  ],
+  "falsch": [
+   [
+    "TF032 Freitext: LWS, zwei Heilmittel",
+    "gruen",
+    "rot",
+    [
+     "rot",
+     "rot",
+     "rot"
+    ]
+   ],
+   [
+    "TF039 Spondylose mit Radikulopathie",
+    "gelb",
+    "gruen",
+    [
+     "gruen",
+     "gruen",
+     "gruen"
+    ]
+   ],
+   [
+    "TF108 Frequenz 4x/Woche",
+    "gelb",
+    "rot",
+    [
+     "rot",
+     "rot",
+     "rot"
+    ]
+   ]
+  ],
+  "laeufe": 177,
+  "median_s": 34.433,
+  "fehler": [
+   "TF101 Beginn exakt am 28. Tag"
+  ],
+  "befund": {
+   "erwartet": 138,
+   "gefunden": 117,
+   "quote": 0.8478260869565217,
+   "fund_n": 170,
+   "fund_ok": 168,
+   "fund_quote": 0.9882352941176471
+  }
+ },
+ "D": {
+  "n": 31,
+  "ok": 28,
+  "quote": 0.9032258064516129,
+  "rot_uebersehen": [],
+  "krit": [],
+  "instabil": [],
+  "falsch": [
+   [
+    "TF038 Spinalkanalstenose lumbal mit Radikulopathie",
+    "gelb",
+    "gruen",
+    [
+     "gruen"
+    ]
+   ],
+   [
+    "TF040 Spondylitis ankylosans, WS",
+    "gelb",
+    "gruen",
+    [
+     "gruen"
+    ]
+   ],
+   [
+    "TF043 Läsion der Rotatorenmanschette, EX",
+    "gelb",
+    "gruen",
+    [
+     "gruen"
+    ]
+   ]
+  ],
+  "laeufe": 31,
+  "median_s": 32.958,
+  "fehler": [],
+  "befund": {
+   "erwartet": 25,
+   "gefunden": 21,
+   "quote": 0.84,
+   "fund_n": 26,
+   "fund_ok": 25,
+   "fund_quote": 0.9615384615384616
+  }
+ },
+ "S": {
+  "n": 23,
+  "ok": 21,
+  "quote": 0.9130434782608695,
+  "rot_uebersehen": [],
+  "krit": [
+   "TF22 Frequenz außerhalb des Rahmens"
+  ],
+  "instabil": [],
+  "falsch": [
+   [
+    "TF22 Frequenz außerhalb des Rahmens",
+    "gelb",
+    "rot",
+    [
+     "rot"
+    ]
+   ],
+   [
+    "TF23 Besonderer Verordnungsbedarf",
+    "gelb",
+    "gruen",
+    [
+     "gruen"
+    ]
+   ]
+  ],
+  "laeufe": 23,
+  "median_s": 33.667,
+  "fehler": [],
+  "befund": {
+   "erwartet": 22,
+   "gefunden": 21,
+   "quote": 0.9545454545454546,
+   "fund_n": 28,
+   "fund_ok": 28,
+   "fund_quote": 1.0
+  }
+ }
+}
