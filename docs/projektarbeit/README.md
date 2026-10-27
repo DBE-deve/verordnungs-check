@@ -8,14 +8,16 @@ Die schriftliche Projektarbeit ist der Kern der IHK-Prüfung. Laut Muster-Bewert
 
 Die Nummern entsprechen der Spalte „Kapitel“ im Beitragslog. Der IHK-Leitfaden zählt die Einleitung als Kapitel 01, deshalb steht dort jede Nummer um eins höher.
 
-| Nr. | Kapitel | Verantwortlich | Status |
+| Nr. | Kapitel | Verantwortlich | Status 27.10.2026 |
 |---|---|---|---|
-| 1 | [Ist- und Soll-Situation](kapitel-1-ist-soll.md) | Thomas Kullmann | Bausteine vorhanden, Text fehlt |
-| 2 | [Analyse möglicher KI-Einsatzbereiche](kapitel-2-einsatzbereiche.md) | Thomas Kullmann | nur Matrix-Folie |
-| 3 | [Tool-Vergleich](kapitel-3-tool-vergleich.md) | Valentin Klamka | Entwurf Eingabekanäle (TCO) |
-| 4 | [Begründete Tool-Auswahl und Einsatzplanung](kapitel-4-auswahl-einsatzplanung.md) | Valentin Klamka, Derk Ermler | Bausteine vorhanden, Text fehlt |
-| 5 | [Erfolgsmessung](kapitel-5-erfolgsmessung.md) | Derk Ermler | Kriterien fertig, Evaluation mit 50 Fällen offen |
-| 6 | [Reflexion und roter Faden](kapitel-6-reflexion.md) | Thomas Kullmann | offen, Inhalt mit Tutor klären |
+| 1 | [Ist- und Soll-Situation](Kapitel_1_Ist-und-Soll-Situation.pdf) | Thomas Kullmann | Entwurf v2, Ergänzungen gelb markiert |
+| 2 | [Analyse möglicher KI-Einsatzbereiche](Kapitel_2_KI-Einsatzbereiche.pdf) | Thomas Kullmann | Entwurf v2 |
+| 3 | [Tool-Vergleich](Kapitel_3_Tool-Vergleich.pdf) | Valentin Klamka | Entwurf v2, Freigabe offen |
+| 4 | [Begründete Tool-Auswahl und Einsatzplanung](Kapitel_4_Tool-Auswahl-und-Einsatzplanung.pdf) | Valentin Klamka, Derk Ermler | Entwurf v2, Freigabe offen |
+| 5 | [Erfolgsmessung](Kapitel_5_Erfolgsmessung.pdf) | Derk Ermler | Entwurf v2 mit Testbatterie, Freigabe offen |
+| 6 | [Reflexion und roter Faden](Kapitel_6_Reflexion.pdf) | Thomas Kullmann | Entwurf v2 |
+
+Maßgeblich sind die PDFs. Die Markdown-Dateien `kapitel-*.md` sind das Arbeitsgerüst vom 20.10. und werden nicht mehr nachgezogen.
 
 ## Arbeitsregeln
 

@@ -17,7 +17,7 @@
     "redaktion:starten": "docker run -d --name pii-redaktion --restart unless-stopped -p 5680:5680 verordnungs-check-redaktion:1.0",
     "redaktion:lokal": "python -m uvicorn app:app --app-dir redaktion --host 127.0.0.1 --port 5680",
     "redaktion:pruefen": "node scripts/redaktion-pruefen.mjs",
-    "test": "node tests/fakten.test.mjs && node tests/diagnosen.test.mjs && node tests/pii.test.mjs && node tests/formular.test.mjs && node tests/workflow.test.mjs",
+    "test": "node tests/fakten.test.mjs && node tests/diagnosen.test.mjs && node tests/pii.test.mjs && node tests/formular.test.mjs && node tests/workflow.test.mjs && node tests/cloud.test.mjs",
     "test:redaktion": "python -m unittest discover -s redaktion/tests -t redaktion"
   },
   "devDependencies": {
