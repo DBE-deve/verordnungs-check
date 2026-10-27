@@ -15,7 +15,7 @@
 
 | Set | Zweck | Fälle | 🟢 | 🟡 | 🔴 | Grenzfälle |
 |---|---|---|---|---|---|---|
-| **E** | Evaluationsset (Holdout): nur für die formale Messung, nie zum Nachbessern | 65 | 20 | 10 | 35 | 8 |
+| **E** | Evaluationsset (Holdout): nur für die formale Messung, nie zum Nachbessern | 65 | 19 | 11 | 35 | 8 |
 | **D** | Entwicklungsset: darf zum Nachbessern genutzt werden | 35 | 11 | 5 | 19 | 4 |
 
 Das E-Set erfüllt die Vorgaben aus `docs/erfolgskriterien.md`: ≥ 12 grün, ≥ 8 gelb, ≥ 25 rot (je Prüfer ≥ 5: Formal 10, Diagnose 10, Mengen 9, Fristen 10), ≥ 5 Grenzfälle. Bei 3 Läufen je Fall sind das 195 Prüfungen.
@@ -54,7 +54,7 @@ Quelle: `supabase/seed/testfaelle.sql` (Prüfdatum 12.10.2026), Ausführungen de
 | TF07 | JSON | Dringlich, Beginn nach 18 Tagen | rot | Fristen: Behandlungsbeginn | v4: rot ✅ |
 | TF08 | JSON | Kontrollfall Gonarthrose mit EX | grün | – | v4: grün ✅ |
 | TF09 | JSON | Kontrollfall M50.1 mit EX | rot | Diagnose: Diagnosegruppe (+ Hinweis KBV-Liste) | v4: rot ✅ |
-| TF10 | JSON | Kontrollfall dringlich, Beginn nach 7 Tagen | rot ⚠️ (bisher grün) | Diagnose: Leitsymptomatik | v4: grün (altes Soll) · Merge (930, 23.10.): rot, Leitsymptomatik ✅ · ⚠️ Leitsymptomatik „c“ gibt es bei EX laut Katalog nicht; Seed nach Vier-Augen-Prüfung anpassen |
+| TF10 | JSON | Kontrollfall dringlich, Beginn nach 7 Tagen | rot (bis 27.10. grün) | Diagnose: Leitsymptomatik | v4: grün (altes Soll) · Merge (930, 23.10.): rot, Leitsymptomatik ✅ · Leitsymptomatik „c“ gibt es bei EX laut Katalog nicht; Seed nach Vier-Augen-Prüfung am 27.10.2026 angepasst |
 | M-899 | Formular | Formular: M17.1, EX, 6× KG, Ausstellung 15.10.2026 | grün | – | Merge (899): grün, 18/18 ok, 6 PII-Felder ersetzt ✅ · Prüfdatum = Tagesdatum, Frist läuft ab 12.11.2026 ab |
 | TF11 | JSON + Historie | geplant v5: Menge im Verordnungsfall überschritten | gelb | Mengen: Verordnungsfall | noch nicht gebaut · Muster: TF047 |
 | TF12 | JSON + Historie | geplant v5: neuer Fall nach 6 Monaten | grün | – | noch nicht gebaut · Muster: TF035 |
@@ -173,9 +173,9 @@ Quelle: `supabase/seed/testfaelle.sql` (Prüfdatum 12.10.2026), Ausführungen de
 | ☐ | TF103 | D | frist | Dringlich, Beginn exakt am 14. Tag | M54.4 · WS · KG 6 | JSON |  | 🟢 grün | – | HeilM-RL § 15 Abs. 1 |
 | ☐ | TF104 | E | frist | Unterbrechung exakt 14 Tage ohne Grund — *Auslegung: Differenz 14 Tage zwischen zwei Sitzungen gilt als nicht länger als 14 Kalendertage. Im Team bestätigen.* | M54.4 · WS · KG 6 | JSON |  | 🟢 grün | – | HeilM-RL § 16 Abs. 4 |
 | ☐ | TF105 | D | frist | Unterbrechung 15 Tage ohne Grund (Gegenprobe) | M54.4 · WS · KG 6 | JSON |  | 🔴 rot | Fristen: Unterbrechung | HeilM-RL § 16 Abs. 4 |
-| ☐ | TF106 | E | diagnose | Leitsymptomatik c bei EX — *Der Katalog kennt für EX nur a, b und x. Die Prompts akzeptieren derzeit auch c; TF10 ist davon betroffen.* | S43.4 · EX · KG 6 | JSON |  | 🔴 rot | Diagnose: Leitsymptomatik | Heilmittelkatalog EX (nur a, b, x) |
+| ☐ | TF106 | E | diagnose | Leitsymptomatik c bei EX — *Der Katalog kennt für EX nur a, b und x. Seit 27.10.2026 prüft der Code das (`leitsymptomatik_zulaessig`); TF10 entsprechend rot.* | S43.4 · EX · KG 6 | JSON |  | 🔴 rot | Diagnose: Leitsymptomatik | Heilmittelkatalog EX (nur a, b, x) |
 | ☐ | TF107 | E | menge | Traktion als ergänzendes Heilmittel bei EX — *Kein Prüfer hat die Zulässigkeit des ergänzenden Heilmittels ausdrücklich im Mandat. Zeigt eine Lücke.* | M17.1 · EX · KG 6 (+ Traktion 6) | JSON |  | 🔴 rot | Mengen: Ergänzendes Heilmittel | Heilmittelkatalog EX (Traktion nur bei WS) |
-| ☐ | TF108 | E | menge | Frequenz 4x/Woche — *Frequenzempfehlung ist Orientierung; Abweichung ohne zusätzliche Dokumentation zulässig. Soll grün, ein Hinweis wäre ein Fehlalarm.* | M54.4 · WS · KG 6 | JSON |  | 🟢 grün | – | HeilM-RL § 12 Abs. 1 Satz 4 |
+| ☐ | TF108 | E | menge | Frequenz 4x/Woche — *Frequenzempfehlung ist Orientierung. Teamentscheidung 27.10.2026: Abweichung von 1–3x/Woche ist ein Hinweis (gelb), analog TF22.* | M54.4 · WS · KG 6 | JSON |  | 🟡 gelb | Mengen: Therapiefrequenz (Hinweis) | HeilM-RL § 12 Abs. 1 Satz 4 |
 | ☐ | TF109 | E | diagnose | M50.1 ohne Zweitcode G55.1 — *Ohne Zweitcode kein anerkannter besonderer Verordnungsbedarf. Soll grün; der Prototyp meldet hier vermutlich einen Hinweis.* | M50.1 · WS · KG 6 | JSON |  | 🟢 grün | – | KBV-Diagnoseliste (beide Codes nötig) |
 | ☐ | TF110 | D | menge | v5: Summe im Fall exakt 18 | M54.4 · WS · KG 6 | JSON | ja | 🟢 grün | – | HeilM-RL § 7 Abs. 2; Heilmittelkatalog WS |
 | ☐ | TF111 | E | menge | v5: Vorverordnung aus dem Entlassmanagement zählt nicht — *Ohne die Regel ergäbe sich 24 (gelb).* | M54.4 · WS · KG 6 | JSON | ja | 🟢 grün | – | HeilM-RL § 16a Abs. 5 |
@@ -945,7 +945,7 @@ Patient Jonas Test, geb. 22.09.1990, hkk, KVNR H443322110. Rezept vom 16.09.2026
 
 </details>
 
-<details><summary><b>TF108</b> · 🟢 grün · Frequenz 4x/Woche</summary>
+<details><summary><b>TF108</b> · 🟡 gelb · Frequenz 4x/Woche</summary>
 
 ```json
 {"verordnung_ref": "VO-0108", "ausstellungsdatum": "2026-10-19", "pruefdatum": "2026-10-26", "geplanter_beginn": "2026-10-27", "dringlich": false, "icd10": "M54.4", "weitere_diagnosen": [], "diagnosegruppe": "WS", "leitsymptomatik": "a", "heilmittel": [{"name": "KG", "einheiten": 6, "art": "vorrangig"}], "ergaenzendes_heilmittel": {"name": null, "einheiten": null}, "frequenz": "4x/Woche", "lanr": "123456701", "bsnr": "987654300", "unterschrift": true, "letzte_behandlung": null, "unterbrechungsgrund": null, "kostentraeger": "GKV"}
@@ -987,8 +987,8 @@ Patient Jonas Test, geb. 22.09.1990, hkk, KVNR H443322110. Rezept vom 16.09.2026
 
 ## Auffälligkeiten beim Erstellen
 
-1. **TF10 ist nach Regelwerk falsch bewertet.** Der Heilmittelkatalog kennt für EX (und WS) nur die Leitsymptomatik a, b und x. TF10 nutzt „c“ und erwartete grün. *Im Merge-Workflow seit 23.10.2026 als Code-Fakt umgesetzt (`leitsymptomatik_zulaessig`), siehe `docs/aenderungsprotokoll.md`.* Seed von TF10 nach Vier-Augen-Prüfung anpassen (Grenzfall TF106).
-2. **Frequenz-Hinweise widersprechen dem Regelwerk.** Nach HeilM-RL § 12 Abs. 1 Satz 4 darf der Arzt ohne zusätzliche Dokumentation von der Frequenzempfehlung abweichen. Ein Hinweis bei 4×/Woche wäre ein Fehlalarm. *Im Merge-Workflow am 20.10.2026 behoben, siehe `docs/aenderungsprotokoll.md`; v4 unverändert.*
+1. **TF10 ist nach Regelwerk falsch bewertet.** Der Heilmittelkatalog kennt für EX (und WS) nur die Leitsymptomatik a, b und x. TF10 nutzt „c“ und erwartete grün. *Im Merge-Workflow seit 23.10.2026 als Code-Fakt umgesetzt (`leitsymptomatik_zulaessig`), siehe `docs/aenderungsprotokoll.md`.* Seed von TF10 am 27.10.2026 nach Vier-Augen-Prüfung angepasst (Grenzfall TF106).
+2. **Frequenz-Hinweise widersprechen dem Regelwerk.** Nach HeilM-RL § 12 Abs. 1 Satz 4 darf der Arzt ohne zusätzliche Dokumentation von der Frequenzempfehlung abweichen. *Teamentscheidung 27.10.2026:* Die Abweichung bleibt ein Hinweis (gelb), kein Fehler; der Code prüft sie seit 27.10. (`frequenz_im_rahmen`). TF108 und TF22 erwarten gelb, siehe `docs/aenderungsprotokoll.md`.
 3. **Zweitcode beim besonderen Verordnungsbedarf.** Bei M50.1, M51.1, M47.2-, M48.0- und Z96.6- verlangt die KBV-Liste den Zweitcode. Ohne ihn gibt es keinen Hinweis (Grenzfall TF109). M75.1 steht ohne Zweitcode auf der Liste: Grüne Fälle mit M75.1 und EX gibt es deshalb nicht.
 4. **Zulässigkeit des ergänzenden Heilmittels hat keinen Prüfer.** Traktion ist nur bei WS vorgesehen. Klären, ob der Mengen-Prüfer das ins Mandat bekommt.
 5. **Merge-Workflow rechnet noch mit 28 € je Einheit** (Knoten „Ergebnis zusammenführen“). Laut Ist-Interview sind es 32 €.

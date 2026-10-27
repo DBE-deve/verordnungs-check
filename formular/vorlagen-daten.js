@@ -325,9 +325,18 @@ window.VORLAGEN = [
   {
     "id": "TF10",
     "name": "Kontrollfall dringlich, fristgerecht",
-    "erwartet": "gruen",
-    "erwartete_befunde": [],
-    "beschreibung": "Kontrollfall: Schulterdistorsion, dringlich, Beginn nach 7 Tagen (Grenze 14)",
+    "erwartet": "rot",
+    "erwartete_befunde": [
+      {
+        "agent": "diagnose",
+        "feld": "Leitsymptomatik",
+        "status": [
+          "fehlt",
+          "fehlerhaft"
+        ]
+      }
+    ],
+    "beschreibung": "Kontrollfall: Schulterdistorsion, dringlich, Beginn nach 7 Tagen (Grenze 14); Leitsymptomatik c gibt es bei EX nicht (nur a, b, x) – Soll seit 27.10.2026 rot",
     "verordnung": {
       "verordnung_ref": "VO-0010",
       "ausstellungsdatum": "2026-10-05",

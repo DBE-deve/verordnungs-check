@@ -4,9 +4,10 @@ HIER = pathlib.Path(__file__).parent
 
 LAUF = sys.argv[1] if len(sys.argv) > 1 else "2026-10-27-cloud"
 rows = [json.loads(l) for l in open(HIER / "ergebnisse" / f"{LAUF}.jsonl")]
-# Dokumentierte Soll-Korrekturen (27.10.2026), für beide Läufe gleich angewandt:
+# Dokumentierte Soll-Korrekturen (27.10.2026), für alle Läufe gleich angewandt.
+# Seit 27.10.2026 auch in Supabase, Seed und testbatterie.json; hier nötig für die JSONL-Läufe davor.
 # TF108: Teamentscheidung Thomas – Frequenz außerhalb 1–3x/Woche = Hinweis (gelb), analog TF22
-# TF10: Heilmittelkatalog EX kennt nur Leitsymptomatik a, b, x – "c" ist fehlerhaft (rot); mit Valentin abzustimmen
+# TF10: Heilmittelkatalog EX kennt nur Leitsymptomatik a, b, x – "c" ist fehlerhaft (rot); von Valentin bestätigt
 KORREKTUR = {"TF108 ": "gelb", "TF10 ": "rot"}
 for r in rows:
     for p, soll in KORREKTUR.items():

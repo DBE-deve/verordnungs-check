@@ -181,6 +181,10 @@ def soll(vo):
             rot.append(("menge", "Ergänzendes Heilmittel"))
         if dg in KATALOG and erg["name"] not in KATALOG[dg]["ergaenzend"]:
             rot.append(("menge", "Ergänzendes Heilmittel"))
+    # Frequenz außerhalb der Empfehlung 1–3x/Woche: Hinweis (Teamentscheidung 27.10.2026)
+    fr = re.findall(r"\d+", str(vo.get("frequenz") or ""))
+    if fr and (min(map(int, fr)) < 1 or max(map(int, fr)) > 3):
+        gelb.append(("menge", "Therapiefrequenz"))
     fall = verordnungsfall(vo)
     if fall is not None and fall > ORIENTIERENDE_MENGE:
         gelb.append(("menge", "Verordnungsfall (orientierende Menge)"))
@@ -420,13 +424,13 @@ fall(B, "frist", "Unterbrechung 15 Tage ohne Grund (Gegenprobe)", "HeilM-RL § 1
      {"ausstellungsdatum": d(days_before=30), "letzte_behandlung": d(days_before=14)})
 fall(B, "diagnose", "Leitsymptomatik c bei EX", KAT_EX + " (nur a, b, x)",
      {"icd10": "S43.4", "diagnosegruppe": "EX", "leitsymptomatik": "c"},
-     hinweis="Der Katalog kennt für EX nur a, b und x. Die Prompts akzeptieren derzeit auch c; TF10 ist davon betroffen.")
+     hinweis="Der Katalog kennt für EX nur a, b und x. Seit 27.10.2026 prüft der Code das (`leitsymptomatik_zulaessig`); TF10 entsprechend rot.")
 fall(B, "menge", "Traktion als ergänzendes Heilmittel bei EX", KAT_EX + " (Traktion nur bei WS)",
      {"icd10": "M17.1", "diagnosegruppe": "EX", "ergaenzendes_heilmittel": ERG("Traktion", 6)},
      hinweis="Kein Prüfer hat die Zulässigkeit des ergänzenden Heilmittels ausdrücklich im Mandat. Zeigt eine Lücke.")
 fall(B, "menge", "Frequenz 4x/Woche", "HeilM-RL § 12 Abs. 1 Satz 4",
      {"frequenz": "4x/Woche"},
-     hinweis="Frequenzempfehlung ist Orientierung; Abweichung ohne zusätzliche Dokumentation zulässig. Soll grün, ein Hinweis wäre ein Fehlalarm.")
+     hinweis="Frequenzempfehlung ist Orientierung. Teamentscheidung 27.10.2026: Abweichung von 1–3x/Woche ist ein Hinweis (gelb), analog TF22.")
 fall(B, "diagnose", "M50.1 ohne Zweitcode G55.1", KBV + " (beide Codes nötig)",
      {"icd10": "M50.1"},
      hinweis="Ohne Zweitcode kein anerkannter besonderer Verordnungsbedarf. Soll grün; der Prototyp meldet hier vermutlich einen Hinweis.")
@@ -489,8 +493,8 @@ TEIL_A = [
     ("TF07", "JSON", "Dringlich, Beginn nach 18 Tagen", "rot", "Fristen: Behandlungsbeginn", "v4: rot ✅"),
     ("TF08", "JSON", "Kontrollfall Gonarthrose mit EX", "grün", "–", "v4: grün ✅"),
     ("TF09", "JSON", "Kontrollfall M50.1 mit EX", "rot", "Diagnose: Diagnosegruppe (+ Hinweis KBV-Liste)", "v4: rot ✅"),
-    ("TF10", "JSON", "Kontrollfall dringlich, Beginn nach 7 Tagen", "rot ⚠️ (bisher grün)", "Diagnose: Leitsymptomatik",
-     "v4: grün (altes Soll) · Merge (930, 23.10.): rot, Leitsymptomatik ✅ · ⚠️ Leitsymptomatik „c“ gibt es bei EX laut Katalog nicht; Seed nach Vier-Augen-Prüfung anpassen"),
+    ("TF10", "JSON", "Kontrollfall dringlich, Beginn nach 7 Tagen", "rot (bis 27.10. grün)", "Diagnose: Leitsymptomatik",
+     "v4: grün (altes Soll) · Merge (930, 23.10.): rot, Leitsymptomatik ✅ · Leitsymptomatik „c“ gibt es bei EX laut Katalog nicht; Seed nach Vier-Augen-Prüfung am 27.10.2026 angepasst"),
     ("M-899", "Formular", "Formular: M17.1, EX, 6× KG, Ausstellung 15.10.2026", "grün", "–",
      "Merge (899): grün, 18/18 ok, 6 PII-Felder ersetzt ✅ · Prüfdatum = Tagesdatum, Frist läuft ab 12.11.2026 ab"),
     ("TF11", "JSON + Historie", "geplant v5: Menge im Verordnungsfall überschritten", "gelb", "Mengen: Verordnungsfall",
@@ -637,9 +641,9 @@ for f in FALL:
     w("")
 w("## Auffälligkeiten beim Erstellen")
 w("")
-w("1. **TF10 ist nach Regelwerk falsch bewertet.** Der Heilmittelkatalog kennt für EX (und WS) nur die Leitsymptomatik a, b und x. TF10 nutzt „c“ und erwartete grün. *Im Merge-Workflow seit 23.10.2026 als Code-Fakt umgesetzt (`leitsymptomatik_zulaessig`), siehe `docs/aenderungsprotokoll.md`.* Seed von TF10 nach Vier-Augen-Prüfung anpassen (Grenzfall TF{}).".format(
+w("1. **TF10 ist nach Regelwerk falsch bewertet.** Der Heilmittelkatalog kennt für EX (und WS) nur die Leitsymptomatik a, b und x. TF10 nutzt „c“ und erwartete grün. *Im Merge-Workflow seit 23.10.2026 als Code-Fakt umgesetzt (`leitsymptomatik_zulaessig`), siehe `docs/aenderungsprotokoll.md`.* Seed von TF10 am 27.10.2026 nach Vier-Augen-Prüfung angepasst (Grenzfall TF{}).".format(
     next(f["id"][2:] for f in FALL if f["titel"] == "Leitsymptomatik c bei EX")))
-w("2. **Frequenz-Hinweise widersprechen dem Regelwerk.** Nach HeilM-RL § 12 Abs. 1 Satz 4 darf der Arzt ohne zusätzliche Dokumentation von der Frequenzempfehlung abweichen. Ein Hinweis bei 4×/Woche wäre ein Fehlalarm. *Im Merge-Workflow am 20.10.2026 behoben, siehe `docs/aenderungsprotokoll.md`; v4 unverändert.*")
+w("2. **Frequenz-Hinweise widersprechen dem Regelwerk.** Nach HeilM-RL § 12 Abs. 1 Satz 4 darf der Arzt ohne zusätzliche Dokumentation von der Frequenzempfehlung abweichen. *Teamentscheidung 27.10.2026:* Die Abweichung bleibt ein Hinweis (gelb), kein Fehler; der Code prüft sie seit 27.10. (`frequenz_im_rahmen`). TF108 und TF22 erwarten gelb, siehe `docs/aenderungsprotokoll.md`.")
 w("3. **Zweitcode beim besonderen Verordnungsbedarf.** Bei M50.1, M51.1, M47.2-, M48.0- und Z96.6- verlangt die KBV-Liste den Zweitcode. Ohne ihn gibt es keinen Hinweis (Grenzfall TF{}). M75.1 steht ohne Zweitcode auf der Liste: Grüne Fälle mit M75.1 und EX gibt es deshalb nicht.".format(
     next(f["id"][2:] for f in FALL if f["titel"] == "M50.1 ohne Zweitcode G55.1")))
 w("4. **Zulässigkeit des ergänzenden Heilmittels hat keinen Prüfer.** Traktion ist nur bei WS vorgesehen. Klären, ob der Mengen-Prüfer das ins Mandat bekommt.")

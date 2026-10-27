@@ -127,13 +127,12 @@ Fristen kommen aus berechnetem Code, die Diagnosegruppe zusätzlich bei bekannte
 ICD-Bereich. Nur bei den übrigen entscheidet das Sprachmodell über gefundene
 Fundstellen – dort kann der Status zwischen Läufen schwanken.
 
-**3. Zwei fachliche Korrekturen sind bewusst nicht übernommen.** Der Stand vom 23.10.2026
-(siehe [`aenderungsprotokoll.md`](aenderungsprotokoll.md)) enthält einen Code-Fakt
-`leitsymptomatik_zulaessig` (WS/EX nur a, b, x) und die Regel, eine abweichende
-Therapiefrequenz sei kein Befund. Beides ändert bestehende Soll-Werte (TF10, TF22) und
-wird erst nach der dort notierten Vier-Augen-Prüfung entschieden. Bis dahin gilt: ein
-Buchstabe a, b oder c ist zulässig (Kriterium 12 prüft der Agent mit dem Regelwerk), und
-eine belegte Frequenzabweichung ist ein Hinweis (Kriterium 16).
+**3. Zwei fachliche Entscheidungen, abgestimmt am 27.10.2026.** Leitsymptomatik: Der
+Heilmittelkatalog kennt für WS und EX nur a, b und x; „c“ ist fehlerhaft (Kriterium 12, im
+Cloud-Workflow als Code-Fakt `leitsymptomatik_zulaessig`). TF10 erwartet deshalb rot statt
+grün. Frequenz: Eine Abweichung von der Empfehlung 1–3× pro Woche bleibt ein Hinweis
+(Kriterium 16, Code-Fakt `frequenz_im_rahmen`); TF22 und TF108 erwarten gelb. Details in
+[`aenderungsprotokoll.md`](aenderungsprotokoll.md).
 
 **3. Sichtbar sind in der Antwort nur die nicht-grünen Zeilen.** Alle 18 Befunde stehen im
 JSON-Feld `befunde` der Antwort und im Prüfprotokoll (`befunde` in Supabase); die Tabelle

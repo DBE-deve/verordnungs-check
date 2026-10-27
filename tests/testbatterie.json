@@ -4812,7 +4812,7 @@
    "ab_v5": false,
    "titel": "Leitsymptomatik c bei EX",
    "fundstelle": "Heilmittelkatalog EX (nur a, b, x)",
-   "hinweis": "Der Katalog kennt für EX nur a, b und x. Die Prompts akzeptieren derzeit auch c; TF10 ist davon betroffen.",
+   "hinweis": "Der Katalog kennt für EX nur a, b und x. Seit 27.10.2026 prüft der Code das (`leitsymptomatik_zulaessig`); TF10 entsprechend rot.",
    "eingabe": {
     "verordnung_ref": "VO-0106",
     "ausstellungsdatum": "2026-10-19",
@@ -4912,7 +4912,7 @@
    "ab_v5": false,
    "titel": "Frequenz 4x/Woche",
    "fundstelle": "HeilM-RL § 12 Abs. 1 Satz 4",
-   "hinweis": "Frequenzempfehlung ist Orientierung; Abweichung ohne zusätzliche Dokumentation zulässig. Soll grün, ein Hinweis wäre ein Fehlalarm.",
+   "hinweis": "Frequenzempfehlung ist Orientierung. Teamentscheidung 27.10.2026: Abweichung von 1–3x/Woche ist ein Hinweis (gelb), analog TF22.",
    "eingabe": {
     "verordnung_ref": "VO-0108",
     "ausstellungsdatum": "2026-10-19",
@@ -4943,8 +4943,14 @@
     "kostentraeger": "GKV"
    },
    "soll": {
-    "gesamtstatus": "gruen",
-    "befunde": []
+    "gesamtstatus": "gelb",
+    "befunde": [
+     {
+      "agent": "menge",
+      "feld": "Therapiefrequenz",
+      "status": "hinweis"
+     }
+    ]
    }
   },
   {

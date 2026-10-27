@@ -37,7 +37,7 @@ insert into public.testfaelle (name, verordnung, erwartete_befunde, beschreibung
  '{"gesamtstatus":"rot","erwartet":[{"agent":"diagnose","feld":"Diagnosegruppe","status":"fehlerhaft"}]}', 'Kontrollfall: zervikaler Bandscheibenschaden (Wirbelsäule) mit Diagnosegruppe EX'),
 ('TF10 Kontrollfall dringlich, fristgerecht',
  '{"verordnung_ref":"VO-0010","ausstellungsdatum":"2026-10-05","pruefdatum":"2026-10-12","geplanter_beginn":"2026-10-12","dringlich":true,"icd10":"S43.4","diagnosegruppe":"EX","leitsymptomatik":"c","heilmittel":[{"name":"KG","einheiten":6,"art":"vorrangig"}],"frequenz":"2x/Woche","lanr":"123456701","bsnr":"987654300","unterschrift":true,"letzte_behandlung":null,"kostentraeger":"GKV"}',
- '{"gesamtstatus":"gruen","erwartet":[]}', 'Kontrollfall: Schulterdistorsion, dringlich, Beginn nach 7 Tagen (Grenze 14)'),
+ '{"gesamtstatus":"rot","erwartet":[{"agent":"diagnose","feld":"Leitsymptomatik","status":["fehlt","fehlerhaft"]}]}', 'Kontrollfall: Schulterdistorsion, dringlich, Beginn nach 7 Tagen (Grenze 14); Leitsymptomatik c gibt es bei EX nicht (nur a, b, x) – Soll seit 27.10.2026 rot'),
 -- Ab hier: je ein Fall pro Prüfkriterium, jeweils nur eine Abweichung gegenüber TF01
 ('TF11 Kostenträger fehlt',
  '{"verordnung_ref":"VO-0011","ausstellungsdatum":"2026-10-05","pruefdatum":"2026-10-12","geplanter_beginn":"2026-10-13","dringlich":false,"icd10":"M54.4","diagnosegruppe":"WS","leitsymptomatik":"a","heilmittel":[{"name":"KG","einheiten":6,"art":"vorrangig"}],"frequenz":"2x/Woche","lanr":"123456701","bsnr":"987654300","unterschrift":true,"letzte_behandlung":null,"kostentraeger":null}',

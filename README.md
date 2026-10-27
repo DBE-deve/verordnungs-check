@@ -184,7 +184,7 @@ Stand 27.10.2026 – Cloud-Workflow läuft, Bewertung **bedingt bereit**:
 - Laufzeit Median rund 34 s je Prüfung, Kosten rund 3 Cent
 - Der zweite Lauf ist kein Blindtest mehr: Die Regeln wurden nach dem ersten Lauf ergänzt
 
-Offen: KBV-Hinweis-Fälle (gelb), Freitext-Extraktion der Diagnosegruppe, Laufzeit, Prüfung des Verordnungsfalls (v5), Soll-Werte TF10 und TF108 mit Valentin abstimmen (siehe [`docs/aenderungsprotokoll.md`](docs/aenderungsprotokoll.md)).
+Offen: KBV-Hinweis-Fälle (gelb), Freitext-Extraktion der Diagnosegruppe, Laufzeit, Prüfung des Verordnungsfalls (v5). Soll-Werte TF10 (rot) und TF108 (gelb) am 27.10. im Team bestätigt (siehe [`docs/aenderungsprotokoll.md`](docs/aenderungsprotokoll.md)).
 
 ## Dokumentation
 
