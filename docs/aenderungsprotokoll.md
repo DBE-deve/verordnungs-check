@@ -8,6 +8,8 @@ Kurznotizen zu Änderungen an den Workflows: was, warum, wie getestet. Neueste o
 
 **Nachtrag Soll-Werte (27.10.2026, nachmittags):** Valentin hat TF10 bestätigt. TF10 erwartet rot (Diagnose: Leitsymptomatik), TF108 gelb (Mengen: Therapiefrequenz, Hinweis). Geändert in der Supabase-Tabelle `testfaelle` (id 10 und 119), in `supabase/seed/testfaelle.sql`, `tests/testbatterie_erzeugen.py` (Frequenzregel in der Soll-Ableitung, nur TF108 ändert sich) und `tests/testbatterie.json`/`.md`. Die Probezeile in `testlaeufe` ist gelöscht.
 
+**Endfassung (27.10.2026, nachmittags):** Valentin (Kapitel 3, 4) und Derk (Kapitel 4, 5) haben Entwurf v2 freigegeben. Kapitel 1–6 und die Präsentation liegen jetzt als Endfassung ohne Freigabe-Markierungen vor; die Entwurfsdateien der Präsentation sind entfernt.
+
 **Anlass**
 - Testbatterie und Demo sollen in der Cloud laufen. Der lokale Redaktionsdienst (Python, BERT-Namensmodell) ist dort nicht erreichbar.
 - Lauf 1 der Testbatterie (Blindtest, 59 E-Fälle × 3): 83,1 % richtige Ampeln, 5 übersehene rote Verordnungen, 2 kritische Fehlalarme. 7 von 10 Fehlern betrafen Regeln, die das Modell statt des Codes prüfte (Mengen, Leitsymptomatik, ergänzende Heilmittel, Frequenz).

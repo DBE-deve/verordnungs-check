@@ -10,12 +10,12 @@ Die Nummern entsprechen der Spalte „Kapitel“ im Beitragslog. Der IHK-Leitfad
 
 | Nr. | Kapitel | Verantwortlich | Status 27.10.2026 |
 |---|---|---|---|
-| 1 | [Ist- und Soll-Situation](Kapitel_1_Ist-und-Soll-Situation.pdf) | Thomas Kullmann | Entwurf v2, Ergänzungen gelb markiert |
-| 2 | [Analyse möglicher KI-Einsatzbereiche](Kapitel_2_KI-Einsatzbereiche.pdf) | Thomas Kullmann | Entwurf v2 |
-| 3 | [Tool-Vergleich](Kapitel_3_Tool-Vergleich.pdf) | Valentin Klamka | Entwurf v2, Freigabe offen |
-| 4 | [Begründete Tool-Auswahl und Einsatzplanung](Kapitel_4_Tool-Auswahl-und-Einsatzplanung.pdf) | Valentin Klamka, Derk Ermler | Entwurf v2, Freigabe offen |
-| 5 | [Erfolgsmessung](Kapitel_5_Erfolgsmessung.pdf) | Derk Ermler | Entwurf v2 mit Testbatterie, Freigabe offen |
-| 6 | [Reflexion und roter Faden](Kapitel_6_Reflexion.pdf) | Thomas Kullmann | Entwurf v2 |
+| 1 | [Ist- und Soll-Situation](Kapitel_1_Ist-und-Soll-Situation.pdf) | Thomas Kullmann | Endfassung, freigegeben |
+| 2 | [Analyse möglicher KI-Einsatzbereiche](Kapitel_2_KI-Einsatzbereiche.pdf) | Thomas Kullmann | Endfassung, freigegeben |
+| 3 | [Tool-Vergleich](Kapitel_3_Tool-Vergleich.pdf) | Valentin Klamka | Endfassung, freigegeben |
+| 4 | [Begründete Tool-Auswahl und Einsatzplanung](Kapitel_4_Tool-Auswahl-und-Einsatzplanung.pdf) | Valentin Klamka, Derk Ermler | Endfassung, freigegeben |
+| 5 | [Erfolgsmessung](Kapitel_5_Erfolgsmessung.pdf) | Derk Ermler | Endfassung, freigegeben |
+| 6 | [Reflexion und roter Faden](Kapitel_6_Reflexion.pdf) | Thomas Kullmann | Endfassung, freigegeben |
 
 Maßgeblich sind die PDFs. Die Markdown-Dateien `kapitel-*.md` sind das Arbeitsgerüst vom 20.10. und werden nicht mehr nachgezogen.
 

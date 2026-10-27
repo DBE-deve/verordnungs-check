@@ -192,4 +192,4 @@ Design-Briefing: [Scope](docs/scope.md) · [Erfolgskriterien](docs/erfolgskriter
 
 Fachlich und Betrieb: [Prüfkriterien](docs/pruefkriterien.md) · [PII-Redaktion](docs/pii-redaktion.md) · [Vordruck Muster 13](docs/vordruck-muster13.md) · [Evaluation](docs/evaluation.md) · [Governance](docs/governance.md) · [Änderungsprotokoll](docs/aenderungsprotokoll.md) · [Ist-Interview](docs/ist-interview.md)
 
-IHK: [Projektarbeit](docs/projektarbeit/README.md) · [Präsentation 3 × 15 min, Entwurf 27.10.](docs/praesentation/Verordnungs-Check_IHK_3x15min_2026-10-27_Entwurf.pdf) · [Statusmeldung MSIT](docs/status/Verordnungs-Check_Status_MSIT_2026-10-19.pdf)
+IHK: [Projektarbeit](docs/projektarbeit/README.md) · [Präsentation 3 × 15 min](docs/praesentation/Verordnungs-Check_IHK_3x15min_2026-10-27.pdf) · [Statusmeldung MSIT](docs/status/Verordnungs-Check_Status_MSIT_2026-10-19.pdf)
