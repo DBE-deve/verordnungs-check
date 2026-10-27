@@ -158,7 +158,7 @@ Die Erfassungsmaske und die Vorlagen-Seite lassen sich lokal gegen die Cloud nut
 
 ## Tests und Evaluation
 
-- **23 Seed-Fälle** (`supabase/seed/testfaelle.sql`): je ein Fall pro Prüfkriterium, dazu grüne Kontrollfälle. `npm run vorlagen:pruefen` prüft Ampel **und** die erwarteten Befunde und gibt am Ende die Abdeckung der 18 Kriterien aus.
+- **23 Seed-Fälle** (`supabase/seed/testfaelle.sql`): je ein Fall pro Prüfkriterium, dazu grüne Kontrollfälle. `npm run vorlagen:pruefen` prüft Ampel **und** die erwarteten Befunde und gibt am Ende die Abdeckung der 18 Kriterien aus. Gegen die Cloud-Instanz: `npm run vorlagen:pruefen -- --url https://<instanz>/webhook/<id>/chat`.
 - **Testbatterie** (`tests/testbatterie.json`, 100 Fälle in Entwicklungs- und Evaluationsset): Vorgehen in [`tests/README.md`](tests/README.md).
 - **Automatische Tests** (`npm test`): Fakten-Code, Diagnoseauswahl, PII-Redaktion, Erfassungsmaske – alle lesen den Workflow-Export und schlagen fehl, wenn Code und Doku auseinanderlaufen.
 
@@ -178,7 +178,7 @@ Prototyp läuft:
 
 - Wissensbasis geladen (HeilM-RL, Heilmittelkatalog, KBV-Diagnoseliste, rund 380 Abschnitte in Supabase)
 - Vier Prüfer, Ampel und Protokoll funktionieren durchgängig; ein Lauf dauert 10–19 Sekunden (Median 12 s), Kosten 3–4 Cent je Prüfung
-- Seed-Evaluation: 23 von 23 Fällen mit der dokumentierten Erwartung deckungsgleich, alle 18 Kriterien abgedeckt
+- Seed-Evaluation: 23 von 23 Fällen mit der dokumentierten Erwartung deckungsgleich, alle 18 Kriterien abgedeckt (Stand vor dem Modellwechsel auf OpenAI – der Ende-zu-Ende-Lauf in der Cloud steht noch aus)
 - Testbatterie mit 100 Fällen für die formale Messung in Sprint 3 vorbereitet
 
 Offen: Business Case als Text, EU-AI-Act-Einordnung, formale Evaluation über 50 Fälle, KBV-Hinweis als Code-Fakt (siehe [`docs/aenderungsprotokoll.md`](docs/aenderungsprotokoll.md)).
