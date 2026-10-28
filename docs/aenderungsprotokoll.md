@@ -2,6 +2,14 @@
 
 Kurznotizen zu Änderungen an den Workflows: was, warum, wie getestet. Neueste oben.
 
+## 28.10.2026 (nachmittags) · Folie 15 TCO je Kanal, Folie 16 Begriff PII
+
+Nach der Generalprobe, freigegeben durch Thomas.
+
+- **Folie 15**, Titel jetzt „Eingabekanal und Gesamtkosten (Total Cost of Ownership – TCO)“. Neue Spalte „Kosten pro Jahr“ je Kanal aus dem TCO-Entwurf vom 19.10.2026 (Valentin): Formular 1.680 €, Chat 2.054 €, Foto 983 €, Scan 823 €, Praxissoftware offen. Zusammensetzung jeweils Eingabezeit (20,97 €/h, 2.080 Verordnungen im Jahr) plus Plattform 520 € plus KI. Die bisherige Spanne „823–2.054 €“ war Minimum und Maximum dieser Werte. Box rechts zeigt jetzt die Bestandteile (KI 70–142 €, Plattform 520 €, Eingabezeit 218–1.454 €). Neu unter der Tabelle: warum das Formular und nicht der günstigste Kanal gewählt ist. Stand Foto + Vision-KI „nur bei Puffer“ ersetzt durch „Prototyp, noch nicht getestet“ (Scan-Variante `n8n/verordnungsbackup-scan.json`, nicht in der Testbatterie). Sprechernotiz neu.
+- **Folie 16**, Band: „PII-Reduktion (personenbezogene Daten)“, damit das Kürzel erklärt ist; Sprechernotiz entsprechend.
+- **Offen:** Kapitel 3 nennt nur die Spanne 823–2.054 € und bezeichnet das Formular als Kanal mit der kürzesten Eingabezeit; das gilt nur für die umgesetzten Kanäle. Kapitel 4 schreibt „PII-Reduktion“ ohne Erklärung. Beide Kapitel-PDFs sind unverändert.
+
 ## 28.10.2026 (mittags) · Konsistenzprüfung Präsentation, neuer Dateiname
 
 Präsentation gegen Kapitel 1–6 und die Testergebnisse (`tests/cloud/ergebnisse/`) geprüft. Neuer Dateiname: `docs/praesentation/Verordnungcheck_Thomas_Valentin_Derk.pptx` und `.pdf` (ersetzt `Verordnungs-Check_IHK_3x15min_2026-10-27`). Kapitel 1–6 sind unverändert.
