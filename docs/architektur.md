@@ -5,7 +5,7 @@
 Ein Workflow, zwei Trigger: das **n8n-Formular** (Muster 13, Standardweg) und der **Chat** (Text oder JSON). Beide Wege laufen ab dem Knoten `Eingabe prüfen` identisch weiter; die Weiche `Kam vom Formular?` entscheidet am Ende, ob die Antwort auf der Abschlussseite des Formulars oder im Chat erscheint.
 
 1. **Eingang:** Das Formular liefert bereits eine strukturierte Verordnung (`Verordnung bauen` → `Verordnung übernehmen`). Im Chat erkennt `Eingabe prüfen`, ob schon JSON vorliegt (`Verordnung strukturiert?`); strukturierte Eingaben überspringen den Extraktor.
-2. **Redaktion im Freitext-Weg:** `Text redigieren` ruft den Redaktionsdienst (`redaktion/`, HuggingFace-NER plus Regeln) auf. Ist er nicht erreichbar, greift `Text redigieren (Muster)` mit denselben Regeln im Workflow; `Redaktion übernehmen` stellt für beide Wege dieselbe Form her. Details: [`pii-redaktion.md`](pii-redaktion.md).
+2. **PII-Reduktion, zwei Eingabewege (Architekturhinweis, Valentin):** Läuft die Eingabe über den **Chat**, geht der Text zuerst in die PII-Reduktion mit dem NER-Modell `Davlan/bert-base-multilingual-cased-ner-hrl` plus Regeln. Bei der **Formular**-Eingabe geht es regelbasiert weiter: `PII entfernen` ersetzt die Felder deterministisch, ein Modell ist nicht nötig. **Stand n8n Cloud:** Das NER-Modell läuft als lokaler Dienst und ist aus der Cloud nicht erreichbar; im Cloud-Workflow ersetzt `Text redigieren (Regeln)` den Chat-Text mit denselben Regeln als Code. Echte Daten gehören deshalb nur in das Formular. Im Detail: `Text redigieren` ruft den Redaktionsdienst (`redaktion/`, HuggingFace-NER plus Regeln) auf. Ist er nicht erreichbar, greift `Text redigieren (Muster)` mit denselben Regeln im Workflow; `Redaktion übernehmen` stellt für beide Wege dieselbe Form her. Details: [`pii-redaktion.md`](pii-redaktion.md).
 3. **Verordnung erfassen (nur Freitext):** Ein LLM-Agent (`gpt-4.1-mini`) überführt den Text in ein festes JSON-Schema. Fehlende Angaben werden `null`, nichts wird geraten; Marker wie `[LANR]` übernimmt er als Wert.
 4. **Diagnosen auswählen (nur Freitext):** Auf den Vordruck passen zwei ICD-Zeilen; die Regel steht in [`vordruck-muster13.md`](vordruck-muster13.md), Abschnitt 5.
 5. **Fakten berechnen (Code-Node „Fristen berechnen“):** Alles, was sich als Regel aufschreiben lässt, rechnet der Code, nicht das LLM:
@@ -61,7 +61,7 @@ Row Level Security ist auf allen Tabellen aktiv, es gibt keine öffentlichen Pol
 | Laufzeitumgebung | n8n Cloud (vorhandene Instanz des Teams) |
 | Sprachmodell | OpenAI `gpt-4.1-mini` (Temperatur 0,1), Embeddings `text-embedding-3-small` |
 | Datenbank | Supabase, Region eu-central-1 (Frankfurt) |
-| PII-Redaktion (Freitext) | Dienst aus `redaktion/` über `REDAKTION_URL`; ohne erreichbaren Dienst greift der Muster-Fallback im Workflow |
+| PII-Redaktion | Chat (Freitext): NER-Modell `bert-base-multilingual-cased-ner-hrl` plus Regeln über den Dienst aus `redaktion/` (`REDAKTION_URL`); ohne erreichbaren Dienst, wie in der n8n Cloud, greifen die Regeln als Code im Workflow. Formular: regelbasiert, Feld für Feld |
 | Zugang für die Rezeption | n8n-Formular (Muster 13) und Chat. Veröffentlicht wird er erst mit aktiver Anmeldung (Basic Auth oder n8n-Login), sonst kann jeder mit dem Link Kosten erzeugen |
 | Nachweis einer erfolgreichen Ausführung | Ausführungsprotokoll in n8n und Zeilen in `pruefungen` und `befunde`. Für die Präsentation: Screenshots je Ampelfarbe |
 | Veröffentlichung | Workflow-Export (ohne Credential-IDs und Webhook-ID), Migrationen, Testdaten und Tests auf GitHub |

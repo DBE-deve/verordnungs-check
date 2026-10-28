@@ -12,6 +12,7 @@
 ### 4.2 Lösung und Architektur (Valentin Klamka)
 - Vier Prüfer: Formal, Diagnose, Menge, Fristen; Ampel mit Fundstellen
 - Leitsatz: **Was sich als Regel aufschreiben lässt, rechnet der Code, nicht das Sprachmodell**
+- PII-Reduktion je Eingabeweg: Chat über NER-Modell `bert-base-multilingual-cased-ner-hrl` plus Regeln, Formular regelbasiert; im Cloud-Prototyp im Chat nur die Regeln (Architekturhinweis Valentin, 28.10.2026)
 - Ausbau: Verordnungsfall-Prüfung mit Historie (Sprint 2)
 
 ### 4.3 Governance (Valentin Klamka)

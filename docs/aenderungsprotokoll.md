@@ -4,6 +4,8 @@ Kurznotizen zu Änderungen an den Workflows: was, warum, wie getestet. Neueste o
 
 ## 28.10.2026 · Präsentation ergänzt, Workflow umbenannt
 
+- **Architekturhinweis PII-Reduktion (Valentin):** Chat-Eingabe geht durch das NER-Modell `bert-base-multilingual-cased-ner-hrl` plus Regeln, Formular-Eingabe läuft regelbasiert. Aufgenommen in die Präsentation (Folie 16 mit neuem Band, Folien 18, 21 und 26, Sprechernotizen), Kapitel 4 (neue Tabelle „Architekturhinweis“, Entscheidungs- und DSGVO-Zeilen), `docs/architektur.md`, `docs/pii-redaktion.md` und README. Der Cloud-Workflow ist **nicht** geändert: Dort läuft im Chat weiterhin nur der Regelteil, weil das Modell lokal läuft; das steht in allen Texten so.
+
 - Abrechnungsdienstleister kostet 1,9 % vom Umsatz (vorher 3–6 %; Angabe der Praxis, übermittelt durch Thomas). Geändert in Präsentation (Folie 3 und 5), Kapitel 1 (Text und Annahmentabelle, Quelle jetzt „Angabe der Praxis“) sowie `docs/projektarbeit/kapitel-1-ist-soll.md` und `docs/ist-interview.md`. In `ist-interview.md` ist die frühere Zahl in F01 vermerkt.
 - Der Cloud-Workflow heißt jetzt **„Verordnungcheck_gemerged“** (vorher „Verordnungs-Check – Cloud (Valentins Architektur, Regel-Redaktion)“). Nur der Name, kein Knoten geändert. Die Namensänderung liegt als Entwurf in der n8n Cloud und muss noch einmal mit „Publish“ übernommen werden; der aktive Stand läuft unverändert.
 - Präsentation: neue Folie 22 „Der Workflow in n8n: vom Formular zur Ampel“ mit Screenshot (`docs/praesentation/bilder/n8n-workflow.png`), jetzt 33 Folien. IHK-Punktzahlen auf Folie 2 und in den Sprechernotizen entfernt, die Kriterien bleiben genannt.

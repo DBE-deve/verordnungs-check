@@ -31,6 +31,13 @@ Zwei Eingabewege, zwei Redaktionen:
 | Formular (n8n-Formular, A5-Maske) | feldbasiert: Identifikatoren werden durch Marker ersetzt, Freitexte entfernt | vollständig, deterministisch, getestet |
 | Freitext im Chat | Dienst (HuggingFace-NER + Regeln), bei Ausfall dieselben Regeln als Code | deutlich besser als Muster allein, aber statistisch – nicht garantierbar |
 
+**Stand n8n Cloud (28.10.2026):** Der Cloud-Workflow `n8n/cloud-verordnungs-check.json`
+enthält für den Chat nur `Text redigieren (Regeln)` – den JavaScript-Port der Regeln aus
+`redaktion/regeln.py`. Das NER-Modell ist nicht portiert, weil die Cloud den lokalen
+Dienst nicht erreicht. Namen ohne Rollenwort („Mustermann klagt …“) erkennt dort nur das
+Modell; deshalb gehören echte Daten ausschließlich in das Formular. Der Merge-Workflow
+(`n8n/merge-formular-vier-pruefer.json`) nutzt den Dienst mit dem Modell.
+
 ## Freitext: Redaktionsdienst mit Muster-Fallback
 
 `Text redigieren` ruft den Redaktionsdienst auf. Die URL steht als Ausdruck im Knoten:

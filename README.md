@@ -83,7 +83,7 @@ Details: [`docs/architektur.md`](docs/architektur.md)
 
 ## Datenschutz: keine Personendaten an die Agenten
 
-Vor den Prüf-Agenten steht der Code-Node **PII entfernen**. Er ersetzt Namen, Geburtsdatum, Versichertennummer, LANR/BSNR sowie Arzt- und Praxisangaben durch Marker wie `[Name]` und entfernt Freitextfelder; das Original bleibt für Protokoll und Antwort erhalten. Im Freitext-Weg redigiert **`Text redigieren`** den Rohtext vorher über einen lokalen Dienst ([`redaktion/`](redaktion/README.md): HuggingFace-NER plus Regeln). Ist der Dienst nicht erreichbar, übernimmt der Knoten **`Text redigieren (Muster)`** mit denselben Regeln im Workflow – es geht also nie Rohtext an ein Modell, nur weniger gründlich redigiert.
+Vor den Prüf-Agenten steht der Code-Node **PII entfernen**. Er ersetzt Namen, Geburtsdatum, Versichertennummer, LANR/BSNR sowie Arzt- und Praxisangaben durch Marker wie `[Name]` und entfernt Freitextfelder; das Original bleibt für Protokoll und Antwort erhalten. Im Chat (Freitext) redigiert **`Text redigieren`** den Rohtext vorher über einen lokalen Dienst ([`redaktion/`](redaktion/README.md): NER-Modell `bert-base-multilingual-cased-ner-hrl` plus Regeln); die Formular-Eingabe geht regelbasiert weiter, Feld für Feld. In der n8n Cloud läuft im Chat nur der Regelteil, weil die Cloud den lokalen Dienst nicht erreicht. Ist der Dienst nicht erreichbar, übernimmt der Knoten **`Text redigieren (Muster)`** mit denselben Regeln im Workflow – es geht also nie Rohtext an ein Modell, nur weniger gründlich redigiert.
 
 Was entfernt wird, was bleibt, wo noch Rohdaten liegen (n8n-Ausführungen, Supabase-Protokoll) und welche Grenzen der Freitext-Weg hat, steht in [`docs/pii-redaktion.md`](docs/pii-redaktion.md).
 
