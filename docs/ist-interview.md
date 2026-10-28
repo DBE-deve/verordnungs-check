@@ -11,7 +11,7 @@ Ausgefüllter Fragebogen: [`field-study/Ist-Interview_Fragebogen_2026-10-16.pdf`
 | Nr. | Thema | Antwort der Praxis |
 |---|---|---|
 | F01 | Absetzungen pro Jahr | ca. 10 Fälle, zusammen ca. 500 € pro Jahr; etwa alle zwei Jahre ein Einzelfall mit bis zu 700 € Abzug |
-| F01 | Heutige Absicherung | Eine dritte Prüfung ist an einen externen Abrechnungsdienstleister ausgelagert. Er fängt fast alle vorher nicht entdeckten Fehler ab und rechnet mit der GKV ab. Kosten: **3–6 % vom Umsatz** |
+| F01 | Heutige Absicherung | Eine dritte Prüfung ist an einen externen Abrechnungsdienstleister ausgelagert. Er fängt fast alle vorher nicht entdeckten Fehler ab und rechnet mit der GKV ab. Kosten: **1,9 % vom Umsatz** (Angabe der Praxis, 28.10.2026; zuvor hier mit 3–6 % erfasst) |
 | F02 | Absetzungsschreiben | Liegt nicht vor |
 | F03 | Häufigste Fehlerursache | **Doppelverordnung und fehlerhafte Folgeverordnung: ca. 90 % aller Fälle** |
 | F04 | Vergütung je Einheit | **32 €** im Schnitt; KG, MLD und weitere Heilmittel haben unterschiedliche Tarife |
@@ -45,7 +45,7 @@ Die Angaben beruhen auf der Kenntnis des Interviewers. Die Bestätigung durch di
 2. **Der Business Case beruht nicht auf Absetzungen.** Mit ca. 500 € pro Jahr sind sie klein, weil der Dienstleister die meisten Fehler abfängt. Die Hebel sind:
    - **Prüfzeit:** 40 Verordnungen × 8 min (6 + 2) = ca. **5,3 Stunden pro Woche** an der Rezeption,
    - **Qualität vor Behandlungsbeginn:** Fehler werden erkannt, bevor die Leistung erbracht ist, nicht erst bei der Abrechnung,
-   - **Abhängigkeit vom Dienstleister** (3–6 % vom Umsatz): Ob und wie weit sich das ändern lässt, ist offen. *Annahme, nicht belegt.*
+   - **Abhängigkeit vom Dienstleister** (1,9 % vom Umsatz, Angabe der Praxis): Ob und wie weit sich das ändern lässt, ist offen. *Annahme, nicht belegt.*
 3. **Zielwert:** Wenn Doppelkontrollen durch Menschen höchstens etwa 85 % wirksam sind, ist eine Trefferquote von **98 %** ein deutlicher Fortschritt (siehe [`erfolgskriterien.md`](erfolgskriterien.md)).
 4. **Vergütung je Einheit** im Business Case: 32 € statt der bisherigen Annahme von 28 €.
 5. **Pilot:** Parallelbetrieb ist möglich, verantwortlich ist die Inhaberin.

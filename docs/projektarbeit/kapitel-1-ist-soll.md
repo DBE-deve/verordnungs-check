@@ -12,7 +12,7 @@
 
 ### 1.2 Das Unternehmen
 - Physiotherapiepraxis (anonym), ca. 10 Mitarbeitende, zwei Standorte
-- Abrechnung mit der GKV über einen externen Abrechnungsdienstleister (3–6 % vom Umsatz)
+- Abrechnung mit der GKV über einen externen Abrechnungsdienstleister (1,9 % vom Umsatz, Angabe der Praxis)
 - Bisheriger KI-Einsatz: keiner im Prüfprozess; die Praxissoftware hilft bei der Verarbeitung, nicht bei der Qualitätssicherung
 
 ### 1.3 Ist-Situation (Field Study)
