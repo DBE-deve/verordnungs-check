@@ -8,12 +8,12 @@ Die schriftliche Projektarbeit ist der Kern der IHK-Prüfung. Laut Muster-Bewert
 
 Die Nummern entsprechen der Spalte „Kapitel“ im Beitragslog. Der IHK-Leitfaden zählt die Einleitung als Kapitel 01, deshalb steht dort jede Nummer um eins höher.
 
-| Nr. | Kapitel | Verantwortlich | Status 27.10.2026 |
+| Nr. | Kapitel | Verantwortlich | Status 28.10.2026 |
 |---|---|---|---|
 | 1 | [Ist- und Soll-Situation](Kapitel_1_Ist-und-Soll-Situation.pdf) | Thomas Kullmann | Endfassung, freigegeben |
 | 2 | [Analyse möglicher KI-Einsatzbereiche](Kapitel_2_KI-Einsatzbereiche.pdf) | Thomas Kullmann | Endfassung, freigegeben |
-| 3 | [Tool-Vergleich](Kapitel_3_Tool-Vergleich.pdf) | Valentin Klamka | Endfassung, freigegeben |
-| 4 | [Begründete Tool-Auswahl und Einsatzplanung](Kapitel_4_Tool-Auswahl-und-Einsatzplanung.pdf) | Valentin Klamka, Derk Ermler | Endfassung, freigegeben |
+| 3 | [Tool-Vergleich](Kapitel_3_Tool-Vergleich.pdf) | Valentin Klamka | Endfassung; 28.10. Abschnitt 6 Kosten je Kanal ergänzt |
+| 4 | [Begründete Tool-Auswahl und Einsatzplanung](Kapitel_4_Tool-Auswahl-und-Einsatzplanung.pdf) | Valentin Klamka, Derk Ermler | Endfassung; 28.10. Architekturhinweis PII ergänzt |
 | 5 | [Erfolgsmessung](Kapitel_5_Erfolgsmessung.pdf) | Derk Ermler | Endfassung, freigegeben |
 | 6 | [Reflexion und roter Faden](Kapitel_6_Reflexion.pdf) | Thomas Kullmann | Endfassung, freigegeben |
 
