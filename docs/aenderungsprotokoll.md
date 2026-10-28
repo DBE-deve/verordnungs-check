@@ -4,6 +4,7 @@ Kurznotizen zu Änderungen an den Workflows: was, warum, wie getestet. Neueste o
 
 ## 28.10.2026 · Präsentation ergänzt, Workflow umbenannt
 
+- Präsentation Folie 3 und 5: Abrechnungsdienstleister kostet 1,9 % vom Umsatz (vorher 3–6 %, Korrektur durch Thomas). Kapitel 1 und `docs/ist-interview.md` nennen noch 3–6 % und sind noch nicht angepasst.
 - Der Cloud-Workflow heißt jetzt **„Verordnungcheck_gemerged“** (vorher „Verordnungs-Check – Cloud (Valentins Architektur, Regel-Redaktion)“). Nur der Name, kein Knoten geändert. Die Namensänderung liegt als Entwurf in der n8n Cloud und muss noch einmal mit „Publish“ übernommen werden; der aktive Stand läuft unverändert.
 - Präsentation: neue Folie 22 „Der Workflow in n8n: vom Formular zur Ampel“ mit Screenshot (`docs/praesentation/bilder/n8n-workflow.png`), jetzt 33 Folien. IHK-Punktzahlen auf Folie 2 und in den Sprechernotizen entfernt, die Kriterien bleiben genannt.
 
