@@ -1,5 +1,5 @@
 {
-  "name": "Verordnungs-Check – Cloud (Valentins Architektur, Regel-Redaktion)",
+  "name": "Verordnungcheck_gemerged",
   "nodes": [
     {
       "name": "Rezeption: Verordnung eingeben",

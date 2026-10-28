@@ -10,5 +10,6 @@ Alle Bilder sind Ausschnitte aus frei zugänglichen Originaldokumenten oder aus 
 | `heilm-rl_titel.png` | 14 Regelwerke | G-BA: Heilmittel-Richtlinie, Titelblatt, zuletzt geändert 15.05.2025, [PDF](https://www.g-ba.de/downloads/62-492-3865/HeilM-RL_2025-05-15_iK-2025-08-05.pdf) | 23.10.2026 |
 | `heilmittelkatalog_ws.png` | 14 Regelwerke | G-BA: Heilmittelkatalog, Diagnosegruppe WS, S. 61 (PDF-Seite 2), [PDF](https://www.g-ba.de/downloads/17-98-3064/HeilM-RL_2024-05-16_Heilmittelkatalog.pdf) | 23.10.2026 |
 | `kbv_diagnoseliste_s12.png` | 14 Regelwerke | KBV: Diagnoseliste Heilmittel, S. 12, [PDF](https://www.kbv.de/documents/praxis/verordnungen/heilmittel/heilmittel-diagnoseliste.pdf) | 23.10.2026 |
+| `n8n-workflow.png` | 22 Workflow | Eigener Screenshot aus der n8n Cloud (Workflow „Verordnungcheck_gemerged“), 28.10.2026 | – |
 
 **Offen:** Prüfen, ob es eine neuere Fassung des Muster 13 als 10.2020 gibt. Falls ja, Bild austauschen.

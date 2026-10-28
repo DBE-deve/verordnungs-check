@@ -2,6 +2,11 @@
 
 Kurznotizen zu Änderungen an den Workflows: was, warum, wie getestet. Neueste oben.
 
+## 28.10.2026 · Präsentation ergänzt, Workflow umbenannt
+
+- Der Cloud-Workflow heißt jetzt **„Verordnungcheck_gemerged“** (vorher „Verordnungs-Check – Cloud (Valentins Architektur, Regel-Redaktion)“). Nur der Name, kein Knoten geändert. Die Namensänderung liegt als Entwurf in der n8n Cloud und muss noch einmal mit „Publish“ übernommen werden; der aktive Stand läuft unverändert.
+- Präsentation: neue Folie 22 „Der Workflow in n8n: vom Formular zur Ampel“ mit Screenshot (`docs/praesentation/bilder/n8n-workflow.png`), jetzt 33 Folien. IHK-Punktzahlen auf Folie 2 und in den Sprechernotizen entfernt, die Kriterien bleiben genannt.
+
 ## 27.10.2026 · Cloud-Fassung, Testbatterie, fünf Regeln im Code
 
 **Workflow:** „Verordnungs-Check – Cloud“, Export `n8n/cloud-verordnungs-check.json`. Der Merge-Workflow bleibt unverändert als Rückfall aktiv.

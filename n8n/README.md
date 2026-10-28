@@ -4,7 +4,7 @@
 |---|---|---|
 | `merge-formular-vier-pruefer.json` | Verordnungs-Check | **Der** Workflow: Chat **und** Muster-13-Formular in einem, PII-Redaktion, Diagnoseauswahl, vier Prüf-Agenten, Ampel, Protokoll |
 | `wissensbasis-laden.json` | Verordnungs-Check – Wissensbasis laden | Lädt die Regelwerke als PDF, teilt sie in Abschnitte, erzeugt Embeddings und speichert sie in Supabase |
-| `cloud-verordnungs-check.json` | Verordnungs-Check – Cloud (Valentins Architektur, Regel-Redaktion) | **Stand in der n8n Cloud seit 27.10.2026**: Merge-Workflow 1:1, Freitext-Redaktion als Code-Knoten (`redaktion/cloud/regeln.js`, Port von `redaktion/regeln.py` ohne Namensmodell), fünf Regel-Fakten mit Code-Urteilen. Formular `/form/verordnungs-check-cloud` |
+| `cloud-verordnungs-check.json` | Verordnungcheck_gemerged (bis 27.10.: „Verordnungs-Check – Cloud (Valentins Architektur, Regel-Redaktion)“) | **Stand in der n8n Cloud seit 27.10.2026**: Merge-Workflow 1:1, Freitext-Redaktion als Code-Knoten (`redaktion/cloud/regeln.js`, Port von `redaktion/regeln.py` ohne Namensmodell), fünf Regel-Fakten mit Code-Urteilen. Formular `/form/verordnungs-check-cloud` |
 | `verordnungsbackup-scan.json` | verordnungsbackup | Scan-Variante in der Cloud: Upload `/form/verordnungsbackup`, Felder per Vision auslesen, danach Merge-Prüfung. Stand vor den Code-Urteilen vom 27.10., Prototyp für den Foto-/Scan-Kanal |
 | `sdk/testbatterie-datenbruecke.mjs` | Verordnungs-Check – Testbatterie Datenbrücke | Webhooks für `tests/cloud/batterie.py`: Testfälle aus Supabase lesen, Ergebnisse nach `testlaeufe` schreiben (Token nur in der Instanz) |
 | `sdk/testfaelle-laden.mjs` | Verordnungs-Check – Testfälle laden | Einmalig: Seed und Testbatterie aus dem Repo in die Tabelle `testfaelle` |
