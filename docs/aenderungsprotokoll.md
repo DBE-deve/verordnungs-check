@@ -2,6 +2,11 @@
 
 Kurznotizen zu Änderungen an den Workflows: was, warum, wie getestet. Neueste oben.
 
+## 28.10.2026 (nachmittags, 2) · Kapitel 6 Zahlen korrigiert, Textebene der PDFs bereinigt
+
+- **Kapitel 6, Abschnitt 2:** „Mit fünf Regeln im Code stieg die Quote von 83 auf 97 %" nannte dieselbe Messung gröber gerundet als Abschnitt 1 (96,6 % / 83,1 %) und schrieb beide Schritte den fünf Regeln zu. Laut Änderungsprotokoll vom 27.10. ergaben die fünf Regeln 94,9 %; die 96,6 % kamen erst mit der Korrektur am Formal-Prüfer. Neu: „Fünf Regeln im Code hoben die Quote von 83,1 auf 94,9 %, eine letzte Code-Korrektur auf 96,6 % – ohne eine Zeile an den Anweisungen zu ändern." Die Aussage zu den Anweisungen bleibt richtig, weil auch die letzte Korrektur im Code-Knoten lag („Prompts unverändert"). Kopfzeile auf Stand 28.10.2026.
+- **Textebene bereinigt:** Die Änderungen vom Mittag an Kapitel 3 und 4 hatten den alten Text nur weiß überdeckt; er war per Suche und Copy-Paste weiter auffindbar (Kapitel 3 Seite 4 zusätzlich mehrfach, weil die Seite aus mehreren Kopien zusammengesetzt war). Alle drei Kapitel sind jetzt aus den unveränderten Fassungen neu aufgebaut, der ersetzte Text ist mit echten Redaktionen entfernt. Geprüft: „823–2.054", „Modellkosten", „kürzesten Eingabezeit", „strukturierte Formular" und „83 auf 97" kommen in den PDFs nicht mehr vor, jede Überschrift genau einmal. Sichtbar hat sich nichts geändert.
+
 ## 28.10.2026 (nachmittags) · Folie 15 TCO je Kanal, Folie 16 Begriff PII
 
 Nach der Generalprobe, freigegeben durch Thomas.
