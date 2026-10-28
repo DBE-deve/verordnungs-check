@@ -2,6 +2,26 @@
 
 Kurznotizen zu Änderungen an den Workflows: was, warum, wie getestet. Neueste oben.
 
+## 28.10.2026 (mittags) · Konsistenzprüfung Präsentation, neuer Dateiname
+
+Präsentation gegen Kapitel 1–6 und die Testergebnisse (`tests/cloud/ergebnisse/`) geprüft. Neuer Dateiname: `docs/praesentation/Verordnungcheck_Thomas_Valentin_Derk.pptx` und `.pdf` (ersetzt `Verordnungs-Check_IHK_3x15min_2026-10-27`). Kapitel 1–6 sind unverändert.
+
+| Folie | Vorher | Jetzt | Grund |
+|---|---|---|---|
+| 1 und Fußzeile aller Folien | Stand 27.10.2026 | Stand 28.10.2026 | Inhalte am 28.10. geändert |
+| 2 | ca. 15 min je Person, gesamt ca. 45 min | ca. 10 min, gesamt ca. 30 min | Vorgabe IHK vom 28.10. (Kürzung des Decks steht noch aus) |
+| 12 | ca. 3–4 Cent und ca. 25 s je Prüfung; ca. 77.000 Eingabetoken | ca. 3 Cent und ca. 34 s; rund 57.000 Eingabetoken | Werte von v4 durch den Cloud-Stand ersetzt (Kapitel 3 und 5) |
+| 17, 31 | 83 % → 97 % | 83,1 % → 96,6 % | gleiche Genauigkeit wie Folien 26, 27, 32 |
+| 25 | vier Prüfer laufen parallel | vier Prüfer laufen nacheinander | Workflow führt die Prüfer nacheinander aus |
+| 25 | Rückfall: Screenshots | Rückfall: Backup-Video, Screenshots | Backup-Video liegt vor |
+| 27 | Ergebnis (Lauf 1 → 2) | Ergebnis (Lauf 1 → Lauf 2 + Nachtest) | 96,6 % und 1 Fehlalarm stammen aus dem Nachtest (Kapitel 5) |
+| 30 | Generalprobe 3 × 15 min | Generalprobe 3 × 10 min | Vorgabe IHK |
+| Notizen 25, 26 | Demo und Hauptstand im Merge-Workflow | Cloud-Workflow „Verordnungcheck_gemerged“; Merge und v4 als Rückfall | passend zu Folie 26 |
+| Notiz 28 | Ergebnisse folgen in Sprint 3 | Ergebnisse vom 27.10. auf der vorigen Folie | veraltet |
+| Notiz 32 | Zielquote mindestens 98 % | 96,6 % richtige Ampeln (Ziel 98 %) | passend zur Folie |
+
+Der Name des Cloud-Workflows „Verordnungcheck_gemerged“ ist inzwischen veröffentlicht.
+
 ## 28.10.2026 · Präsentation ergänzt, Workflow umbenannt
 
 - **Architekturhinweis PII-Reduktion (Valentin):** Chat-Eingabe geht durch das NER-Modell `bert-base-multilingual-cased-ner-hrl` plus Regeln, Formular-Eingabe läuft regelbasiert. Aufgenommen in die Präsentation (Folie 16 mit neuem Band, Folien 18, 21 und 26, Sprechernotizen), Kapitel 4 (neue Tabelle „Architekturhinweis“, Entscheidungs- und DSGVO-Zeilen), `docs/architektur.md`, `docs/pii-redaktion.md` und README. Der Cloud-Workflow ist **nicht** geändert: Dort läuft im Chat weiterhin nur der Regelteil, weil das Modell lokal läuft; das steht in allen Texten so.
